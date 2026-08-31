@@ -1,6 +1,6 @@
-<p align="center">
-  <img src="outils/banner.svg" alt="Ekko GEO Visibility Platform" width="100%"/>
-</p>
+<div align="center">
+<img src="https://github.com/Yael-Parra/GEO-Platform/blob/outils/banner.svg" width="1500"/>
+</div>
 
 <h1 align="center">EKKO</h1>
 
