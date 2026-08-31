@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="Ekko GEO Visibility Platform" width="100%"/>
+  <img src="outils/banner.svg" alt="Ekko GEO Visibility Platform" width="100%"/>
 </p>
 
 <h1 align="center">EKKO</h1>
@@ -80,7 +80,9 @@ The window for first-mover advantage in GEO tooling is narrow. This will not sta
 
 <p align="center">
   <a href="https://www.linkedin.com/in/yael-parra/">
-    <img src="https://img.shields.io/badge/Yael%20Parra-LinkedIn-3E1D26?style=for-the-badge&logo=linkedin&logoColor=white"/>
+    <img src="https://img.shields.io/badge/Yael%20Parra-F7F2EC?style=for-the-badge&labelColor=F7F2EC&color=F7F2EC&logoColor=391F27"/>
+    &nbsp;
+    <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/>
   </a>
 </p>
 
