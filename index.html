@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ekko · Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* VOICE: cálido, cercano, premium; un panel que se lee como un informe bien hecho.
+   IDEA: el eco, la marca resonando en las respuestas de la IA.
+   PICTURE: anillos de eco en el check; en el panel, la gráfica principal y la cuota de voz.
+   COLOUR and TYPE: Ekko v2, 70 % crema, 20 % oxblood, 10 % sienna. Space Grotesk + Inter.
+   LAYOUT: barra superior con cinco secciones; cada sección, una pantalla con bloques. */
+:root{color-scheme:light dark;
+--bg:light-dark(#F7F3EC,#1A0E12);--card:light-dark(#FCFAF6,#24151A);--deep:light-dark(#F1E9DB,#2E1B21);
+--line:light-dark(#E6DBC8,#432B31);--taupe:light-dark(#8A7B6C,#9C8B7C);--mut:light-dark(#6F6154,#C2B1A2);
+--ink:light-dark(#3E1D26,#F3E9DF);--sienna:light-dark(#BE5A3C,#D9714F);--sd:light-dark(#A94A2E,#E5876A);
+--rose:light-dark(#A04A5A,#D77E8E);--onacc:#FCFAF6;--ox:#3E1D26;
+--s1:light-dark(#3E1D26,#F3E9DF);--s2:light-dark(#6B3B45,#D9BFB6);--s3:light-dark(#9A6A6F,#A98E8C);--s4:light-dark(#C9AFA7,#6E5258);--s5:light-dark(#E6DBC8,#432B31);
+--fd:'Space Grotesk',system-ui,sans-serif;--fb:'Inter',system-ui,sans-serif}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--fb);overflow-x:clip}
+h1,h2,h3,h4{font-family:var(--fd);margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:clamp(26px,3.4vw,40px);font-weight:600}
+h2{font-size:20px;font-weight:600}h3{font-size:16px;font-weight:600}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--sd);outline-offset:2px;border-radius:8px}
+.tab{font-variant-numeric:tabular-nums}
+.mut{color:var(--mut)}.sm{font-size:13px}
+.lab{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:600}
+/* barra */
+.top{position:sticky;top:0;z-index:30;background:color-mix(in oklab,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:auto;display:flex;align-items:center;gap:16px;padding:10px max(4vw,16px);flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:8px;font:700 22px var(--fd);letter-spacing:-.02em;background:none;border:0;padding:0}
+.logo svg{width:30px;height:30px}
+.nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
+.nav::-webkit-scrollbar{display:none}
+.nav button{flex:none;border:0;background:none;padding:10px 14px;border-radius:100px;font-weight:600;color:var(--mut);min-height:40px}
+.nav button[aria-current=page]{background:var(--ink);color:var(--bg)}
+.client{font-size:13px;color:var(--mut);white-space:nowrap}
+@media(max-width:760px){.client{display:none}.nav{order:3;flex-basis:100%}}
+/* estructura */
+main{max-width:1240px;margin:auto;padding:24px max(4vw,16px) 80px}
+.vh{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px 24px;margin-bottom:20px}
+.vh>div:first-child{flex:1 1 420px}
+.vh p{margin-top:8px;color:var(--mut);max-width:68ch}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(12,minmax(0,1fr))}
+.c{grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.c>h2,.c>.ch{margin-bottom:12px}
+.ch{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}.ch>div{flex:1}
+.ch .sub{font-size:13px;color:var(--mut);margin-top:4px}
+@media(min-width:900px){.s8{grid-column:span 8}.s4{grid-column:span 4}.s6{grid-column:span 6}.s7{grid-column:span 7}.s5{grid-column:span 5}}
+.btn{border:0;border-radius:100px;padding:10px 18px;font-weight:600;min-height:44px;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn.pri{background:var(--sd);color:var(--onacc)}
+.btn.sec{background:none;border:1px solid var(--ink)}
+.btn.ghost{background:none;border:1px solid var(--line)}
+.btn.sm{min-height:36px;padding:6px 14px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:100px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+button.chip{min-height:36px}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:12px;padding:2px 8px;border-radius:100px;background:var(--deep);white-space:nowrap}
+.tag.br{background:color-mix(in oklab,var(--sienna) 18%,var(--card))}
+/* estados: icono + texto, una chispa */
+.st{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;white-space:nowrap}
+.st.ok{color:var(--sd)}.st.warn{color:var(--ink)}.st.bad{color:var(--rose)}.st.none{color:var(--mut)}
+.note{background:var(--deep);border-left:3px solid var(--sienna);border-radius:8px;padding:12px 14px}
+.err{border:1px solid var(--rose);border-radius:8px;padding:12px 14px;background:var(--card)}
+/* kpis */
+.kpis{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:4px}
+.kpi[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.kpi .v{font:600 clamp(26px,3vw,34px)/1 var(--fd);font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:15px;color:var(--mut);font-weight:500}
+.kpi .l{font-size:13px;font-weight:600;color:var(--mut)}
+.kpi .d{font-size:12px}
+/* barras */
+.bars{display:flex;flex-direction:column;gap:6px}
+.bar{display:grid;grid-template-columns:minmax(6rem,9rem) minmax(0,1fr) 4.6rem;gap:10px;align-items:center;border:0;background:none;padding:6px;border-radius:10px;text-align:left;width:100%}
+button.bar:hover{background:var(--deep)}
+.bar .n{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .t{height:12px;border-radius:100px;background:var(--deep);position:relative;overflow:hidden}
+.bar .t i{position:absolute;inset:0 auto 0 0;border-radius:100px;background:var(--s3)}
+.bar.own .t i{background:var(--sienna)}
+.bar .t b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.bar .bv{font-size:13px;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar.sel{background:var(--deep)}.bar.dim{opacity:.4}
+@media(max-width:520px){.bar{grid-template-columns:minmax(5.5rem,7rem) minmax(0,1fr) 3.8rem}}
+.fig{position:relative;min-height:260px}.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+svg text{font-family:var(--fb);font-size:12px;fill:var(--mut)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mut);margin-top:8px}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+/* aviso */
+.aviso{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;background:var(--ox);color:#F3E9DF;border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.aviso .ic{width:40px;height:40px;border-radius:50%;background:var(--sienna);display:grid;place-items:center;color:#FCFAF6;font-weight:700}
+.aviso h2{color:#FCFAF6;margin:4px 0 8px}
+.aviso ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;color:#E6DBC8;font-size:14px}
+.aviso .lab{color:#E6DBC8}
+.aviso .btn.sec{border-color:#E6DBC8;color:#F3E9DF}
+.aviso .acts{display:flex;flex-direction:column;gap:8px}
+@media(max-width:760px){.aviso{grid-template-columns:1fr}.aviso .acts{flex-direction:row;flex-wrap:wrap}}
+/* tablas */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:8px;border-bottom:1px solid var(--line)}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+/* preguntas */
+.qrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.qrow:first-child{border-top:0}
+.qopen{all:unset;cursor:pointer;font-weight:600;display:block}
+.qopen:hover{text-decoration:underline;text-underline-offset:3px}
+.qopen:focus-visible{outline:2px solid var(--sd)}
+.qv{display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.qv .pct{font:600 18px var(--fd);min-width:3.2rem;text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:620px){.qrow{grid-template-columns:1fr}.qv{justify-content:flex-start}}
+.inp{border:1px solid var(--taupe);border-radius:12px;background:var(--card);padding:10px 12px;min-height:44px;font-size:16px;width:100%}
+textarea.inp{min-height:110px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
+/* drawer y modal */
+.back{position:fixed;inset:0;background:rgba(30,12,18,.45);z-index:50}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(34rem,100vw);background:var(--bg);z-index:51;overflow:auto;padding:20px 22px 40px;border-left:1px solid var(--line)}
+.drawer section{border-top:1px solid var(--line);padding:16px 0}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(36rem,calc(100vw - 32px));max-height:86vh;overflow:auto;background:var(--bg);border-radius:18px;z-index:51;padding:22px;border:1px solid var(--line)}
+.x{border:1px solid var(--line);background:var(--card);border-radius:50%;width:40px;height:40px;font-size:18px}
+/* heatmap */
+.heat{display:grid;gap:3px;font-size:13px}
+.heat .h{font-size:12px;color:var(--mut);font-weight:600;padding:4px;display:flex;align-items:flex-end}
+.heat .a{font-weight:600;padding:6px 4px;display:flex;align-items:center}
+.heat .cell{border-radius:6px;display:grid;place-items:center;min-height:34px;font-variant-numeric:tabular-nums}
+/* acciones */
+.cards{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,22rem),1fr))}
+.act{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.act .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.draft{background:var(--deep);border-radius:10px;padding:10px 12px;font-size:14px}
+.draft del{color:var(--rose)}
+.ba{display:flex;gap:8px;flex-wrap:wrap}.ba>div{flex:1 1 9rem;border-radius:10px;padding:10px;background:color-mix(in oklab,var(--sienna) 14%,var(--card))}
+.ba>div.p{background:none;border:1px dashed var(--taupe)}
+.ba b{display:block;font:600 20px var(--fd)}
+/* check */
+.hero{display:grid;gap:24px;grid-template-columns:minmax(0,1fr);align-items:center;min-height:62vh}
+@media(min-width:900px){.hero{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}}
+.hero h1{font-size:clamp(32px,4.6vw,52px);font-weight:700;letter-spacing:-.02em}
+.rings{position:relative;aspect-ratio:1;max-width:520px;width:100%;margin:auto}
+.rings svg{width:100%;height:100%}
+.ring{fill:none;stroke:var(--sienna);transform-origin:50% 50%;transform-box:view-box}
+.pulse .ring{animation:ripple 3.6s ease-out infinite}
+@keyframes ripple{from{transform:scale(.25);opacity:.5}to{transform:scale(1);opacity:0}}
+.steps{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.steps li{display:flex;gap:10px;align-items:center}
+.big{font:700 clamp(44px,7vw,76px)/.9 var(--fd);color:var(--sienna);font-variant-numeric:tabular-nums}
+.stepper{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.stepper span{flex:1 1 8rem;border-top:3px solid var(--line);padding-top:8px;font-size:13px;font-weight:600;color:var(--mut)}
+.stepper span.on{border-color:var(--sienna);color:var(--ink)}
+.plans{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr))}
+.plan{border:1px solid var(--line);border-radius:16px;padding:16px;background:var(--card);text-align:left;display:flex;flex-direction:column;gap:6px}
+.plan[aria-pressed=true]{border:2px solid var(--ink)}
+.plan .pr{font:700 26px var(--fd)}
+.plan ul{margin:4px 0 0;padding-left:18px;font-size:13px;color:var(--mut)}
+.meter{height:14px;border-radius:100px;background:var(--deep);overflow:hidden;position:relative}
+.meter i{position:absolute;inset:0 auto 0 0;background:var(--sienna);border-radius:100px}
+.meter b{position:absolute;top:0;bottom:0;left:80%;width:2px;background:var(--ink)}
+.formula{font-size:13px;background:var(--deep);border-radius:10px;padding:10px 12px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.toggle:first-child{border-top:0}
+.sw{width:46px;height:28px;border-radius:100px;border:1px solid var(--taupe);background:var(--deep);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--taupe);transition:left .2s}
+.sw[aria-checked=true]{background:var(--sd);border-color:var(--sd)}.sw[aria-checked=true]::after{left:21px;background:#FCFAF6}
+details.blk{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-top:16px}
+details.blk>summary{cursor:pointer;padding:16px 20px;font:600 17px var(--fd);list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.blk>summary::after{content:"▾";color:var(--mut)}
+details.blk[open]>summary::after{content:"▴"}
+details.blk>div{padding:0 20px 20px}
+.toast{visibility:hidden;position:fixed;left:50%;bottom:24px;transform:translate(-50%,140%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:100px;font-weight:600;z-index:80;transition:transform .3s;max-width:calc(100vw - 32px)}
+.toast.on{transform:translate(-50%,0);visibility:visible}
+.tour-hole{position:fixed;z-index:90;border-radius:16px;box-shadow:0 0 0 9999px rgba(30,12,18,.55),0 0 0 3px var(--sienna);pointer-events:none;transition:all .25s}
+.tour-tip{position:fixed;z-index:91;width:min(22rem,calc(100vw - 32px));background:var(--ox);color:#F3E9DF;border-radius:16px;padding:16px}
+.tour-tip h3{color:#FCFAF6;margin:4px 0 6px}
+.tour-tip .row{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.tour-tip .btn.sec{border-color:#E6DBC8;color:#F3E9DF}
+.foot{margin-top:28px;font-size:12px;color:var(--mut)}
+.soon{font-size:11px;font-weight:600;border:1px dashed var(--taupe);color:var(--mut);border-radius:100px;padding:2px 8px;white-space:nowrap}
+.lang{position:relative}
+#langSlot{margin-left:auto}
+.lang-b{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:100px;padding:6px 12px;min-height:40px;font-weight:600;font-size:13px}
+.lang svg{width:22px;height:15px;border-radius:3px;flex:none;box-shadow:0 0 0 1px var(--line)}
+.lang-m{position:absolute;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;display:flex;flex-direction:column;gap:2px;min-width:10rem;z-index:40;box-shadow:0 10px 30px rgba(30,12,18,.15)}
+.lang-m button{display:flex;align-items:center;gap:10px;border:0;background:none;padding:10px 12px;border-radius:10px;font-weight:600;text-align:left;min-height:44px}
+.lang-m button:hover{background:var(--deep)}
+.lang-m button[aria-checked=true]{background:var(--ink);color:var(--bg)}
+.client+#langSlot{margin-left:0}
+@media(max-width:760px){.client+#langSlot{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+ <button class="logo" data-go="check" aria-label="Ekko"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="#BE5A3C" stroke-opacity=".3" stroke-width="2"/><circle cx="20" cy="20" r="12" fill="none" stroke="#BE5A3C" stroke-opacity=".6" stroke-width="2"/><circle cx="20" cy="20" r="6" fill="#BE5A3C"/></svg>ekko</button>
+ <nav class="nav" id="nav" aria-label="Secciones"></nav>
+ <span class="client" id="client"></span>
+ <div id="langSlot"></div>
+</div></header>
+<main id="app" tabindex="-1"></main>
+<div id="layer"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+{
+/* ======== DATOS DE EJEMPLO / SAMPLE DATA: todo es ficticio, everything is fictional ======== */
+const S={lang:"es",view:"check",mi:4,metric:"vis",eng:null,comp:null,qf:{fase:"all",tipo:"all",tema:"",q:""},qopen:null,accTab:"todo",plan:"esencial",addons:{},alerts:{mail:true,slack:false,rank:true,acc:true,weekly:true},check:"idle",altaStep:0,selEng:"Perplexity",topic:0,probe:null};
+const t=(es,en)=>S.lang==="en"?en:es;
+const B=(es,en)=>({es,en});
+const L=x=>x&&typeof x==="object"&&"es" in x?x[S.lang]:x;
+const BRAND="Alvenca",WEB="alvenca.example";
+const MONTHS=["2026-07","2026-08","2026-09","2026-10","2026-11"];
+const MS={es:["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],en:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]};
+const ML={es:["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"],en:["January","February","March","April","May","June","July","August","September","October","November","December"]};
+const MES=m=>MS[S.lang][+m.slice(5)-1]+" "+m.slice(2,4);
+const MESL=m=>ML[S.lang][+m.slice(5)-1]+" "+m.slice(0,4);
+const ord=n=>S.lang==="en"?n+(n%10===1&&n!==11?"st":n%10===2&&n!==12?"nd":n%10===3&&n!==13?"rd":"th"):n+"º";
+const ENG=["ChatGPT","Gemini","AI Overview","AI Mode","Perplexity"];
+const EXTRA=[{n:"Claude",p:39},{n:"Copilot",p:39}];
+const N_MONTH=1800,N_ENG=360;
+const ENGV={ChatGPT:[15,16.5,19,18,24.1],Gemini:[14,15,17.5,17,20.4],"AI Overview":[17,17.5,19,18.5,23.5],"AI Mode":[12,13,14.5,14,16.5],Perplexity:[13,13,14,13,12.5]};
+const K={sov:[9.8,10.4,11.6,11.2,13.1],cit:[1.2,1.4,1.9,2.0,3.1],sent:[68,70,71,69,73],pos:[4.8,4.6,4.1,4.3,3.6],acc:[72,74,76,78,84]};
+K.vis=MONTHS.map((_,i)=>+(ENG.reduce((s,e)=>s+ENGV[e][i],0)/ENG.length).toFixed(1));
+const COMPS=["Morvela Homes","Trelisa Residencial","Quintavía","Brevanto","Solenca Homes"];
+const SOV={"Morvela Homes":[18.1,17.6,17.2,17.5,16.4],"Trelisa Residencial":[15.2,15.8,16.1,15.4,14.9],"Quintavía":[12.0,12.4,11.0,12.6,12.0],"Brevanto":[10.5,10.1,11.9,11.8,10.2],"Solenca Homes":[8.2,8.0,7.4,8.9,8.6]};
+SOV[BRAND]=K.sov;
+const MTX_NOV={"Morvela Homes":[31.0,21.0,26.0,26.3,15.0],"Trelisa Residencial":[22.0,22.4,19.5,18.0,19.8],"Quintavía":[17.0,16.0,15.5,14.0,13.0],"Brevanto":[14.0,13.5,12.0,12.5,10.0],"Solenca Homes":[11.0,10.0,9.5,9.0,8.0]};
+const M={vis:{n:B("Visibilidad","Visibility"),u:" %",d:1,info:B("En qué % de respuestas de la IA aparece Alvenca","Share of AI answers that mention Alvenca"),p:true},
+ sov:{n:B("Cuota de voz","Share of voice"),u:" %",d:1,info:B("Qué parte de las menciones de marcas son de Alvenca","Share of all brand mentions that are Alvenca"),p:true},
+ cit:{n:B("Cuota de citas","Citation share"),u:" %",d:1,info:B("Qué parte de los enlaces que da la IA llevan a alvenca.example","Share of links in AI answers that point to alvenca.example"),p:true},
+ acc:{n:B("Exactitud","Accuracy"),u:" %",d:0,info:B("Respuestas cuyos datos de Alvenca coinciden con la ficha real","Answers whose facts about Alvenca match the real listing"),p:true},
+ sent:{n:B("Sentimiento","Sentiment"),u:"/100",d:0,info:B("Tono con el que la IA habla de Alvenca (100 = muy positivo)","Tone the AI uses about Alvenca (100 = very positive)"),fix:2},
+ pos:{n:B("Posición media","Average position"),u:"",d:1,info:B("Lugar medio en el que aparece Alvenca (1 = primera)","Average place where Alvenca appears (1 = first)"),inv:true,fix:.3}};
+const TRAF={vis:[410,460,520,505,690],lead:[9,11,12,12,17],src:[["ChatGPT",540],["Perplexity",72],["Gemini",48],["Copilot",30]]};
+const GOALS=[["vis",14.2,22],["cit",1.2,4],["acc",72,90],["pos",4.8,3.0]];
+const TEMA={rep:B("Reputación de la promotora","Developer reputation"),cal:B("Calidades y eficiencia","Build quality and efficiency"),ubi:B("Ubicación y zonas","Location and areas"),pro:B("Proceso de compra","Buying process"),pre:B("Precio y financiación","Price and financing"),pla:B("Plazos de entrega","Delivery times"),gar:B("Garantías y avales","Guarantees and deposits"),pos:B("Servicio posventa","After-sales service")};
+const TEMAS=[["rep",31,3],["cal",27,2],["ubi",22,3],["pro",18,2],["pre",12,4],["pla",9,5],["gar",7,6]];
+const FASE={I:B("Se informa","Researching"),C:B("Compara","Comparing"),D:B("Decide","Deciding")};
+const Q=[["I",0,"rep",B("¿Qué promotoras de obra nueva son más fiables en Madrid?","Which new-build developers are most reliable in Madrid?"),28,"Morvela Homes"],
+["I",0,"gar",B("¿Es seguro comprar una vivienda sobre plano en 2026?","Is it safe to buy an off-plan home in 2026?"),6,"Trelisa Residencial"],
+["I",0,"gar",B("¿Qué garantías tengo si la promotora no entrega la vivienda?","What protection do I have if the developer never delivers?"),4,"Morvela Homes"],
+["I",0,"gar",B("¿Cómo funciona el aval de las cantidades entregadas a cuenta?","How does the guarantee on deposit payments work?"),9,"Trelisa Residencial"],
+["I",0,"ubi",B("¿Qué zonas de Madrid tienen obra nueva con buena relación calidad-precio?","Which parts of Madrid have good-value new builds?"),21,"Quintavía"],
+["I",0,"cal",B("¿Merece la pena una vivienda con calificación energética A?","Is an A-rated energy-efficient home worth it?"),33,BRAND],
+["C",1,"rep",B("¿Qué es mejor, Alvenca o Morvela Homes, para comprar obra nueva?","Which is better for a new build, Alvenca or Morvela Homes?"),71,"Morvela Homes"],
+["C",1,"ubi",B("Compara las promociones de Alvenca y Trelisa Residencial en Prado Alto","Compare Alvenca and Trelisa Residencial developments in Prado Alto"),64,BRAND],
+["C",0,"cal",B("¿Qué promotoras incluyen aerotermia y suelo radiante de serie?","Which developers include heat pumps and underfloor heating as standard?"),38,BRAND],
+["C",0,"pla",B("¿Qué promotora de Málaga entrega antes de plazo?","Which developer in Málaga delivers ahead of schedule?"),11,"Trelisa Residencial"],
+["C",0,"pre",B("¿Cuánto cuesta un piso de obra nueva de 3 dormitorios en el corredor sur?","How much is a new 3-bedroom flat in the southern corridor?"),14,"Brevanto"],
+["C",0,"cal",B("¿Qué promotoras permiten personalizar acabados sin coste?","Which developers let you customise finishes at no cost?"),19,"Morvela Homes"],
+["C",0,"pre",B("¿Me conviene subrogarme a la hipoteca del promotor o pedir la mía?","Should I take over the developer's mortgage or get my own?"),3,"Morvela Homes"],
+["D",1,"rep",B("Opiniones de compradores de Alvenca","Alvenca buyer reviews"),88,BRAND],
+["D",1,"pla",B("¿Alvenca cumple los plazos de entrega?","Does Alvenca deliver on time?"),79,BRAND],
+["D",1,"pre",B("¿Qué incluye el precio de una vivienda de Alvenca?","What does the price of an Alvenca home include?"),74,BRAND],
+["D",1,"pro",B("¿Cómo reservo una vivienda de Alvenca en Prado Alto?","How do I reserve an Alvenca home in Prado Alto?"),82,BRAND],
+["D",0,"pro",B("¿Qué documentos firmo al reservar una vivienda sobre plano?","What do I sign when reserving an off-plan home?"),8,"Trelisa Residencial"],
+["D",0,"pro",B("¿Puedo visitar el piso piloto antes de firmar el contrato?","Can I visit the show flat before signing?"),16,"Quintavía"],
+["D",0,"rep",B("¿Qué promotora tiene mejor servicio posventa?","Which developer has the best after-sales service?"),13,"Morvela Homes"]];
+const FANOUT={rep:B(["promotoras obra nueva Madrid opiniones 2026","promotora fiable ranking compradores","Morvela Homes opiniones"],["new build developers Madrid reviews 2026","most reliable developer buyer ranking","Morvela Homes reviews"]),
+ gar:B(["aval cantidades a cuenta Ley 38/1999","promotora quiebra vivienda sobre plano qué pasa","seguro decenal obra nueva"],["deposit guarantee off-plan Spain law","developer bankruptcy off-plan what happens","ten-year structural insurance new build"]),
+ ubi:B(["obra nueva Prado Alto precio m2","mejores barrios obra nueva Madrid 2026","obra nueva corredor sur promociones"],["Prado Alto new build price per m2","best areas for new builds Madrid 2026","southern corridor new developments"]),
+ cal:B(["aerotermia suelo radiante obra nueva de serie","calificación energética A ahorro anual","personalizar acabados promotora"],["heat pump underfloor heating standard new build","A energy rating yearly savings","developer customise finishes"]),
+ pla:B(["promotora retrasos entrega Málaga","plazo entrega obra nueva normal","Trelisa Residencial entrega anticipada"],["developer delivery delays Málaga","normal delivery time new build","Trelisa Residencial early delivery"]),
+ pre:B(["precio piso obra nueva 3 dormitorios corredor sur","subrogación hipoteca promotor ventajas","IVA vivienda nueva 10 %"],["price new 3 bedroom flat southern corridor","taking over developer mortgage pros and cons","VAT on new homes Spain 10%"]),
+ pro:B(["documentos reserva vivienda sobre plano","contrato de arras obra nueva","visitar piso piloto antes de firmar"],["documents to reserve off-plan home","deposit contract new build Spain","visit show flat before signing"])};
+const STYPE={Portales:B("Portales","Property portals"),Medios:B("Medios","Media"),Foros:B("Foros","Forums"),Video:B("Vídeo","Video"),Comp:B("Competidores","Competitors"),Propia:B("Propia","Own site")};
+const SRC=[["portalcasas.example",212,"Portales"],["pisosya.example",168,"Portales"],["diarioeconomico.example",121,"Medios"],["asociacionconsumo.example",96,"Medios"],["forocompradores.example",88,"Foros"],["videoportal.example",74,"Video"],["morvela.example",63,"Comp"],["buscavivienda.example",59,"Portales"],["gacetafinanciera.example",52,"Medios"],[WEB,41,"Propia"]];
+const TRACE=[["/promociones/prado-alto",B("H2 «Calidades de la vivienda»","H2 “Home specifications”"),14,"ok"],["/preguntas-frecuentes",B("Datos estructurados FAQPage","FAQPage structured data"),11,"ok"],["/blog/aval-cantidades-a-cuenta",B("H1 y primer párrafo","H1 and first paragraph"),6,"ok"],["/","Meta description",5,"ok"],["/promociones/costa-alba",B("Ficha sin datos estructurados","Listing without structured data"),0,"bad"]];
+const ACC=[[B("Precio «desde» de Prado Alto","Prado Alto “from” price"),B("289.000 €","€289,000"),B("312.000 € (IVA incluido)","€312,000 (VAT included)"),"ChatGPT, Perplexity","g"],
+ [B("Entrega de Costa Alba","Costa Alba handover"),"2026",B("Segundo trimestre de 2027","Q2 2027"),"Gemini","g"],
+ [B("Calificación energética de Prado Alto","Prado Alto energy rating"),"B","A","AI Overview","m"],
+ [B("Garaje y trastero","Parking and storage"),B("Ambos incluidos","Both included"),B("Garaje incluido, trastero opcional","Parking included, storage optional"),"ChatGPT","m"]];
+const TECH=[[B("robots.txt permite GPTBot","robots.txt allows GPTBot"),"ok"],[B("robots.txt permite ClaudeBot","robots.txt allows ClaudeBot"),"ok"],[B("robots.txt permite PerplexityBot","robots.txt allows PerplexityBot"),"bad",B("Está bloqueado: explica parte de la caída en Perplexity","It is blocked, which explains part of the drop in Perplexity")],[B("robots.txt permite Google-Extended","robots.txt allows Google-Extended"),"ok"],[B("Existe llms.txt","llms.txt exists"),"bad",B("No existe: la IA no tiene un mapa de tus páginas clave","Missing: the AI has no map of your key pages")],[B("Datos estructurados Organization","Organization structured data"),"ok"],[B("Datos estructurados en las fichas de promoción","Structured data on development listings"),"warn",B("Solo 1 de 4 promociones los tiene","Only 1 of 4 developments has it")],[B("Sitemap actualizado","Sitemap up to date"),"ok"]];
+const WHY={ChatGPT:B("Tira mucho de portales inmobiliarios y prensa económica. Gana quien aparece en ellos con datos claros y actualizados.","Leans heavily on property portals and business press. Whoever appears there with clear, current facts wins."),Gemini:B("Se apoya en el índice de Google y en vídeo. Cuentan los datos estructurados y los vídeos de las promociones.","Relies on Google's index and on video. Structured data and development videos count."),"AI Overview":B("Resume los primeros resultados de Google. Si la ficha de la promoción no está arriba, no entra.","Summarises Google's top results. If the listing isn't near the top, it isn't included."),"AI Mode":B("Bebe del buscador y de Google Business: fichas de oficinas de venta, horarios y reseñas.","Draws on search and Google Business: sales office profiles, opening hours and reviews."),Perplexity:B("Cita fuentes recientes y foros. Necesita poder rastrear tu web y encontrar novedades con fecha.","Cites recent sources and forums. It needs to crawl your site and find dated updates.")};
+const FIX={ChatGPT:B(["Ficha de cada promoción con precio, plazos y calidades en texto claro","Presencia con datos en portales inmobiliarios y prensa económica"],["A listing per development with price, timing and specs in plain text","Presence with facts on property portals and in the business press"]),Gemini:B(["Datos estructurados en las fichas de promoción","Vídeos de las viviendas con títulos que respondan preguntas reales"],["Structured data on development listings","Home videos titled after real buyer questions"]),"AI Overview":B(["Respuesta directa al principio de cada ficha","Mejorar el posicionamiento de las páginas de garantías y precios"],["A direct answer at the top of each listing","Better rankings for the guarantees and pricing pages"]),"AI Mode":B(["Completar Google Business de cada oficina de venta","Responder las reseñas pendientes"],["Complete Google Business for every sales office","Reply to pending reviews"]),Perplexity:B(["Desbloquear PerplexityBot en robots.txt","Publicar novedades con fecha: avances de obra y entregas"],["Unblock PerplexityBot in robots.txt","Publish dated updates: construction progress and handovers"])};
+const TOPICS=[["cal",142,12,B("La IA destaca la aerotermia y la calificación A de serie en Alvenca.","The AI highlights Alvenca's standard heat pumps and A energy rating."),B("La IA señala que los acabados de cocina son más básicos que los de Morvela Homes.","The AI notes kitchen finishes are more basic than Morvela Homes'.")],
+ ["ubi",98,21,B("La IA recomienda Alvenca Prado Alto por sus zonas verdes y el acceso a la circunvalación.","The AI recommends Alvenca Prado Alto for its green spaces and ring-road access."),B("La IA ve las promociones del corredor sur lejos del transporte público.","The AI sees the southern corridor developments as far from public transport.")],
+ ["pla",40,38,B("La IA cita la entrega a tiempo de la promoción de Robledal.","The AI cites the on-time handover of the Robledal development."),B("La IA menciona un retraso de cuatro meses en una promoción de 2024.","The AI mentions a four-month delay on a 2024 development.")],
+ ["pre",51,33,B("La IA valora que el precio incluya garaje.","The AI likes that the price includes parking."),B("La IA considera a Alvenca más cara que Brevanto en el sur de Madrid.","The AI sees Alvenca as pricier than Brevanto in southern Madrid.")],
+ ["pos",30,27,B("La IA destaca la app de incidencias para compradores.","The AI highlights the buyer issue-reporting app."),B("La IA recoge quejas en foros por tiempos de respuesta en posventa.","The AI picks up forum complaints about after-sales response times.")],
+ ["gar",22,5,B("La IA explica bien el aval cuando la pregunta nombra a Alvenca.","The AI explains the deposit guarantee well when the question names Alvenca."),B("La IA no menciona a Alvenca cuando explica los avales en general.","The AI doesn't mention Alvenca when explaining deposit guarantees in general.")]];
+const PACK={n:B("Promoción inmobiliaria","Residential development"),items:[[B("Preguntas plantilla","Template questions"),B("180 en tres fases: garantías, plazos, calidades, zonas, precio y compra","180 across three stages: guarantees, timing, specs, areas, price and buying")],[B("Competidores semilla","Seed competitors"),B("Promotoras activas en tus mismas provincias y rangos de precio","Developers active in your regions and price ranges")],[B("Fuentes de referencia","Reference sources"),B("Portales inmobiliarios, prensa económica, asociaciones de consumidores y foros de compradores","Property portals, business press, consumer associations and buyer forums")],[B("Métricas destacadas","Key metrics"),B("Exactitud de precios y plazos, y visibilidad por promoción","Price and timing accuracy, and visibility per development")],[B("Reglas de contenido","Content rules"),B("Información al comprador, avales, certificado energético, publicidad","Buyer information, deposit guarantees, energy certificate, advertising")],[B("Acciones típicas","Typical actions"),B("Fichas de promoción estructuradas, página de garantías, avances de obra","Structured listings, guarantees page, construction updates")]]};
+const PLANS=[{id:"esencial",n:B("Esencial","Essential"),p:129,q:120,ia:5,lang:1,f:4,pts:B(["120 preguntas, 5 IAs","Medición semanal","Acciones y circuito medido"],["120 questions, 5 AIs","Weekly measurement","Actions with measured results"])},{id:"pro",n:B("Profesional","Professional"),p:349,q:300,ia:5,lang:2,f:4,pts:B(["300 preguntas, 2 idiomas","Normativa del sector","Alertas en Slack"],["300 questions, 2 languages","Sector compliance rules","Slack alerts"])},{id:"avanzado",n:B("Avanzado","Advanced"),p:790,q:600,ia:7,lang:3,f:8,pts:B(["600 preguntas, 7 IAs","Dos mediciones por semana","Exportación y API"],["600 questions, 7 AIs","Twice-weekly measurement","Export and API"])}];
+const ACTS0=[
+{id:"a1",st:"rev",t:B("Corregir el precio «desde» que repite la IA","Fix the “from” price the AI keeps repeating"),ch:B("Web · ficha Prado Alto","Web · Prado Alto listing"),why:B("ChatGPT y Perplexity dicen 289.000 € y el precio real es 312.000 €. Es un dato que el comprador compara.","ChatGPT and Perplexity say €289,000; the real price is €312,000. Buyers compare this figure."),kpi:"acc",norm:"warn",draft:B("Viviendas de 3 dormitorios desde 312.000 € <b>(IVA incluido, superficie construida 98 m²)</b>. Calificación energética A.","3-bedroom homes from €312,000 <b>(VAT included, built area 98 m²)</b>. Energy rating A."),fixnote:B("Se añade «IVA incluido» y la superficie, obligatorios al anunciar precio (RD 515/1989).","Adds “VAT included” and the floor area, required when advertising a price (Spanish RD 515/1989)."),q:[16,15]},
+{id:"a2",st:"todo",t:B("Página de garantías: aval de las cantidades a cuenta","Guarantees page: protection for deposit payments"),ch:B("Web · nueva página","Web · new page"),why:B("«Garantías y avales» es tu tema más débil (7 %). Tres preguntas de la fase Se informa no te nombran.","“Guarantees and deposits” is your weakest topic (7%). Three Researching-stage questions don't mention you."),kpi:"vis",norm:"ok",draft:B("Cada cantidad que entregas antes de la llave está avalada por una entidad financiera, como exige la Ley 38/1999. Te damos el certificado del aval con cada pago.","Every payment you make before handover is guaranteed by a bank, as Spanish law (Ley 38/1999) requires. You get the guarantee certificate with each payment."),q:[1,2,3]},
+{id:"a3",st:"todo",t:B("Desbloquear PerplexityBot en robots.txt","Unblock PerplexityBot in robots.txt"),ch:B("Web · técnico","Web · technical"),why:B("Perplexity es tu peor IA (12,5 %) y no puede leer alvenca.example.","Perplexity is your weakest AI (12.5%) and cannot read alvenca.example."),kpi:"vis",norm:"ok",draft:B("User-agent: PerplexityBot\nAllow: /","User-agent: PerplexityBot\nAllow: /"),q:[0,4]},
+{id:"a4",st:"todo",t:B("Publicar llms.txt con tus páginas clave","Publish llms.txt with your key pages"),ch:B("Web · técnico","Web · technical"),why:B("Sin llms.txt la IA no tiene un mapa de tus promociones, precios y garantías.","Without llms.txt the AI has no map of your developments, prices and guarantees."),kpi:"cit",norm:"ok",draft:B("# Alvenca\n> Promotora de obra nueva en Madrid y Málaga.\n- Promociones: /promociones\n- Garantías y avales: /garantias","# Alvenca\n> New-build developer in Madrid and Málaga.\n- Developments: /promociones\n- Guarantees: /garantias"),q:[0,13]},
+{id:"a5",st:"pub",t:B("Preguntas frecuentes estructuradas en cada promoción","Structured FAQs on every development"),ch:"Web · FAQPage",why:B("La IA citaba poco alvenca.example. Las FAQ responden en 40 a 60 palabras lo que se pregunta.","The AI rarely cited alvenca.example. FAQs answer real questions in 40 to 60 words."),kpi:"cit",norm:"ok",draft:B("Bloque de 12 preguntas por promoción marcado como FAQPage.","A block of 12 questions per development, marked up as FAQPage."),pubMonth:3,q:[15,16]},
+{id:"a6",st:"rev",t:B("Nota de prensa: entrega anticipada en Costa Alba","Press release: early handover at Costa Alba"),ch:B("Prensa","Press"),why:B("La IA repite un retraso de 2024. Una entrega a tiempo con fecha corrige el relato.","The AI repeats a 2024 delay. A dated on-time handover corrects the story."),kpi:"sent",norm:"bad",draft:B("Alvenca entrega Costa Alba, <del>la promoción más sostenible de la Costa del Sol</del>, dos meses antes de lo previsto.","Alvenca hands over Costa Alba, <del>the most sustainable development on the Costa del Sol</del>, two months ahead of schedule."),block:B("«La más sostenible» es un superlativo medioambiental sin certificación registrada (Ley 3/1991 y Directiva (UE) 2024/825). Hace falta el certificado o quitar la frase.","“The most sustainable” is an environmental superlative with no registered certification (Spanish Ley 3/1991 and EU Directive 2024/825). It needs the certificate, or the phrase must go."),q:[9,14]},
+{id:"a7",st:"todo",t:B("Responder en foros la duda sobre plazos","Answer the delivery-time question in forums"),ch:B("Foros · identificado como Alvenca","Forums · posting as Alvenca"),why:B("forocompradores.example es la quinta fuente más citada y ahí está el hilo del retraso de 2024.","forocompradores.example is the fifth most cited source, and the 2024 delay thread lives there."),kpi:"sent",norm:"ok",draft:B("Hola, os escribe el equipo de Alvenca. La promoción de 2024 se entregó con cuatro meses de retraso por la licencia de primera ocupación; desde entonces hemos entregado tres a tiempo.","Hi, this is the Alvenca team. The 2024 development was handed over four months late because of the occupancy licence; since then we have delivered three on time."),q:[14]},
+{id:"a8",st:"todo",t:B("Comparativa de calidades con datos frente al mercado","Specs comparison against the market, with data"),ch:"Blog",why:B("La IA te ve con acabados más básicos que Morvela Homes. Una tabla con datos verificables lo matiza.","The AI sees your finishes as more basic than Morvela Homes'. A table with verifiable data adds nuance."),kpi:"sov",norm:"warn",draft:B("Tabla de calidades de serie con marca y modelo de cada elemento, fuente y fecha.","Standard specs table with the brand and model of each item, source and date."),fixnote:B("Comparativa solo con datos objetivos, fuente y fecha, sin nombrar al competidor de forma denigrante (Ley 3/1991, art. 10).","Comparison only with objective data, source and date, never disparaging a competitor (Spanish Ley 3/1991, art. 10)."),q:[6,11]}];
+S.acts=ACTS0.map(a=>({...a}));S.comps=[...COMPS];
+try{const v=localStorage.getItem("ekko.plan");if(v)S.plan=v;}catch(e){}
+/* idioma: ?lang=en|es, luego lo recordado, luego español */
+{const p=new URLSearchParams(location.search).get("lang");let l=p;if(!l){try{l=localStorage.getItem("ekko.lang");}catch(e){}}S.lang=l==="en"?"en":"es";}
+const $=(s,el=document)=>el.querySelector(s),$$=(s,el=document)=>[...el.querySelectorAll(s)];
+const loc=()=>S.lang==="en"?"en-GB":"es-ES";
+const fmt=(v,d=1)=>v==null?"—":Number(v).toLocaleString(loc(),{minimumFractionDigits:d,maximumFractionDigits:d});
+const eur=v=>S.lang==="en"?"€"+Math.round(v).toLocaleString("en-GB"):Math.round(v).toLocaleString("es-ES")+" €";
+const num=v=>Number(v).toLocaleString(loc());
+const plan=()=>PLANS.find(p=>p.id===S.plan);
+const toast=m=>{const e=$("#toast");e.textContent=m;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2600);};
+const ICON={ok:"✓",warn:"!",bad:"✕",none:"○"};
+const st=(k,x)=>`<span class="st ${k}"><span aria-hidden="true">${ICON[k]}</span>${x}</span>`;
+const moe=(p,n)=>1.96*Math.sqrt(p/100*(1-p/100)/n)*100;
+function val(key,i){if(S.eng&&key==="vis")return ENGV[S.eng][i];return K[key][i];}
+function delta(key){const i=S.mi;if(i<1)return {t:t("primer mes medido","first month measured"),c:"none"};const a=val(key,i),b=val(key,i-1),df=a-b,m=M[key],n=S.eng?N_ENG:N_MONTH;
+ const thr=m.p?1.96*Math.sqrt(a/100*(1-a/100)/n+b/100*(1-b/100)/n)*100:m.fix*1.5;const sg=(df>0?"+":"")+fmt(df,m.d);
+ if(Math.abs(df)<thr)return {t:t(`= dentro del margen (${sg})`,`= within the margin (${sg})`),c:"none"};
+ const good=m.inv?df<0:df>0;return {t:`${good?"▲":"▼"} ${sg} ${t("frente a","vs")} ${MES(MONTHS[i-1])}`,c:good?"ok":"bad"};}
+const rankIn=(i,b)=>Object.entries(SOV).sort((x,y)=>y[1][i]-x[1][i]).findIndex(x=>x[0]===b)+1;
+const mtx=i=>{const o={};for(const b in MTX_NOV)o[b]=MTX_NOV[b].map(v=>+(v*SOV[b][i]/SOV[b][4]).toFixed(1));o[BRAND]=ENG.map(e=>ENGV[e][i]);return o;};
+/* ======== idioma: banderas ======== */
+const FLAG={es:`<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#AA151B"/><rect y="5" width="30" height="10" fill="#F1BF00"/></svg>`,
+ en:`<svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="uk"><path d="M0 0v30h60V0z"/></clipPath><clipPath id="ukt"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><g clip-path="url(#uk)"><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#ukt)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></g></svg>`};
+function langBox(){const o=S.langOpen;return `<div class="lang"><button class="lang-b" data-act="langtoggle" aria-haspopup="true" aria-expanded="${!!o}" aria-label="${t("Idioma: español","Language: English")}">${FLAG[S.lang]}<span>${S.lang.toUpperCase()}</span><span aria-hidden="true">▾</span></button>${o?`<div class="lang-m" role="menu">${[["es","Español"],["en","English"]].map(([k,n])=>`<button role="menuitemradio" aria-checked="${S.lang===k}" data-act="setlang" data-id="${k}">${FLAG[k]}<span>${n}</span></button>`).join("")}</div>`:""}</div>`;}
+function setLang(l){S.lang=l;S.langOpen=false;try{localStorage.setItem("ekko.lang",l);}catch(e){}const u=new URL(location.href);u.searchParams.set("lang",l);history.replaceState(null,"",u.pathname+u.search+u.hash);document.documentElement.lang=l;document.title=t("Ekko · Demo","Ekko · Demo");render();}
+/* ======== navegación ======== */
+const SECS=[["inicio",B("Inicio","Home")],["preguntas",B("Preguntas","Questions")],["competencia",B("Competencia","Competitors")],["acciones",B("Acciones","Actions")],["plan",B("Mi plan","My plan")]];
+function nav(){const pub=S.view==="check"||S.view==="alta";
+ $("#nav").innerHTML=pub?`<button data-go="check" ${S.view==="check"?'aria-current="page"':""}>${t("Check gratis","Free check")}</button><button data-go="alta" ${S.view==="alta"?'aria-current="page"':""}>${t("Prueba 14 días","14-day trial")}</button><button data-go="inicio">${t("Ver panel de ejemplo","See sample dashboard")}</button>`
+ :SECS.map(([id,n])=>`<button data-go="${id}" ${S.view===id?'aria-current="page"':""}>${L(n)}</button>`).join("")+`<button data-act="tour">${t("Guía","Guide")}</button>`;
+ $("#client").textContent=pub?t("Demo con datos de ejemplo","Demo with sample data"):`${BRAND} · ${L(PACK.n)} · ${L(plan().n)}`;
+ $("#langSlot").innerHTML=langBox();}
+function go(v){S.view=v;S.qopen=null;S.probe=null;S.langOpen=false;if(location.hash!=="#"+v)history.replaceState(null,"",location.pathname+location.search+"#"+v);render();scrollTo({top:0});$("#app").focus({preventScroll:true});}
+const vh=(ti,p,extra="")=>`<div class="vh"><div><h1>${ti}</h1>${p?`<p>${p}</p>`:""}</div>${extra}</div>`;
+const monthPick=()=>`<div class="chips" role="group" aria-label="${t("Mes","Month")}">${MONTHS.map((m,i)=>`<button class="chip" data-act="month" data-i="${i}" aria-pressed="${S.mi===i}">${MES(m)}</button>`).join("")}</div>`;
+const xbtn=(act,id,lab)=>`<button class="x" style="width:24px;height:24px;font-size:13px" data-act="${act}" data-id="${id}" aria-label="${lab}">×</button>`;
+const bars=(rows,max)=>`<div class="bars">${rows.map(r=>{const w=Math.max(0,Math.min(100,r.v/max*100));const tag=r.act?"button":"div";return `<${tag} class="bar ${r.own?"own":""} ${r.sel?"sel":""} ${r.dim?"dim":""}" ${r.act?`type="button" data-act="${r.act}" data-id="${r.id}" aria-pressed="${!!r.sel}"`:""}><span class="n">${r.n}</span><span class="t"><i style="width:${w}%"></i>${r.mark!=null?`<b style="left:${Math.min(100,r.mark/max*100)}%"></b>`:""}</span><span class="bv">${r.x}</span></${tag}>`}).join("")}</div>`;
+/* ======== CHECK GRATIS ======== */
+const ringsSvg=pulse=>`<svg viewBox="0 0 400 400" class="${pulse?"pulse":""}" aria-hidden="true">${[0,1,2,3,4].map(i=>`<circle class="ring" cx="200" cy="200" r="190" stroke-width="2" stroke-opacity="${pulse?.9:.12+i*.05}" style="${pulse?`animation-delay:${i*.72}s`:`transform:scale(${.25+i*.19})`}"/>`).join("")}<circle cx="200" cy="200" r="34" fill="var(--sienna)"/><text x="200" y="207" text-anchor="middle" style="font:700 ${S.lang==="en"?17:20}px var(--fd);fill:#FCFAF6">${t("tu marca","your brand")}</text></svg>`;
+function vCheck(){
+ if(S.check==="idle")return `<section class="hero"><div><p class="lab">${t("Check gratis · sin registro","Free check · no sign-up")}</p><h1 style="margin:10px 0 14px">${t("¿Te nombra la IA cuando alguien busca lo que vendes?","Does AI mention you when someone looks for what you sell?")}</h1><p class="mut" style="font-size:17px;max-width:46ch">${t("Lanzo 10 preguntas reales de tu sector a ChatGPT, Gemini y Perplexity y te digo en dos minutos si apareces, qué dice de ti y qué fallo tiene.","I ask ChatGPT, Gemini and Perplexity 10 real questions from your sector and tell you in two minutes whether you appear, what they say about you and what they get wrong.")}</p>
+ <form id="checkForm" style="display:grid;gap:12px;margin-top:22px;max-width:30rem"><label class="f">${t("Tu web","Your website")}<input class="inp" id="cWeb" value="${WEB}" autocomplete="url" required></label><label class="f">${t("Sector","Sector")}<select class="inp" id="cSec"><option>${t("Promoción inmobiliaria (detectado)","Residential development (detected)")}</option><option>${t("Farma","Pharma")}</option><option>Retail</option><option>${t("Automoción","Automotive")}</option><option>${t("Otro","Other")}</option></select></label><button class="btn pri" type="submit">${t("Comprobar gratis","Check for free")}</button><span class="sm mut">${t("Sin tarjeta ni correo. Demo: el resultado usa datos de ejemplo.","No card, no email. Demo: the result uses sample data.")}</span></form></div><div class="rings">${ringsSvg(false)}</div></section>`;
+ if(S.check==="run"){const Ls=[t("Leyendo alvenca.example y detectando el sector","Reading alvenca.example and detecting the sector"),t("Generando 10 preguntas de compra","Generating 10 buyer questions"),t("Preguntando a ChatGPT, Gemini y Perplexity","Asking ChatGPT, Gemini and Perplexity"),t("Comparando con tus competidores","Comparing with your competitors")];
+  return `<section class="hero"><div><p class="lab">${t("Analizando","Analysing")}</p><h1 style="margin:10px 0">${t("Escuchando el eco de","Listening for the echo of")} ${BRAND}</h1><ul class="steps">${Ls.map((l,i)=>`<li>${i<S.checkStep?st("ok",""):`<span class="st none" aria-hidden="true">○</span>`}<span class="${i>S.checkStep?"mut":""}">${l}</span></li>`).join("")}</ul></div><div class="rings">${ringsSvg(true)}</div></section>`;}
+ return `${vh(t(`${BRAND} aparece en 19 de cada 100 respuestas`,`${BRAND} appears in 19 out of 100 answers`),t("Resultado del check gratis sobre 10 preguntas y 3 IAs. Morvela Homes aparece en 31.","Free check result across 10 questions and 3 AIs. Morvela Homes appears in 31."))}
+ <div class="grid"><section class="c s7"><h2>${t("Lo que he encontrado","What I found")}</h2>
+ <div style="display:flex;flex-direction:column;gap:12px">
+ <div class="err">${st("bad",t("La IA da un precio equivocado","The AI quotes the wrong price"))}<p style="margin-top:6px">${t("ChatGPT dice que Prado Alto cuesta desde 289.000 €. Tu web dice 312.000 €.","ChatGPT says Prado Alto starts at €289,000. Your website says €312,000.")}</p></div>
+ <div class="note">${st("warn",t("Perplexity no puede leer tu web","Perplexity cannot read your website"))}<p style="margin-top:6px">${t("Tu robots.txt bloquea a PerplexityBot. Es tu IA más floja.","Your robots.txt blocks PerplexityBot. It is your weakest AI.")}</p></div>
+ <div class="note">${st("warn",t("No apareces cuando se pregunta por garantías","You don't appear in questions about guarantees"))}<p style="margin-top:6px">${t("En «¿Es seguro comprar sobre plano?» la IA recomienda a Trelisa Residencial y Morvela Homes.","For “Is it safe to buy off-plan?” the AI recommends Trelisa Residencial and Morvela Homes.")}</p></div></div></section>
+ <section class="c s5"><h2>${t("Por IA","By AI")}</h2>${bars([["ChatGPT",24],["Gemini",20],["Perplexity",13]].map(([n,v])=>({n,v,x:v+" %",own:true})),40)}
+ <div class="note" style="margin-top:16px"><p class="sm"><b>${t("Respuesta de ejemplo","Sample answer")}</b></p><p class="sm" style="margin-top:4px">${t("«Para obra nueva en Madrid, Morvela Homes y Trelisa Residencial tienen buena reputación. Alvenca destaca por la calificación energética A…»","“For new builds in Madrid, Morvela Homes and Trelisa Residencial have a good reputation. Alvenca stands out for its A energy rating…”")}</p></div>
+ <button class="btn pri" data-go="alta" style="margin-top:16px;width:100%">${t("Ver el informe completo · 14 días de prueba","See the full report · 14-day trial")}</button></section></div>`;}
+function runCheck(){S.check="run";S.checkStep=0;render();const tick=()=>{S.checkStep++;if(S.checkStep>=4){S.check="done";render();return;}render();setTimeout(tick,700);};setTimeout(tick,700);}
+/* ======== ALTA ======== */
+function vAlta(){const s=S.altaStep,names=[t("Tu empresa","Your company"),t("Competidores","Competitors"),t("Preguntas","Questions"),t("IAs y plan","AIs and plan")];
+ const stp=`<div class="stepper">${names.map((n,i)=>`<span class="${i<=s?"on":""}">${i+1}. ${n}</span>`).join("")}</div>`;let body="";
+ if(s===0)body=`<div class="grid"><section class="c s6"><h2>${t("Tu empresa","Your company")}</h2><div style="display:grid;gap:12px"><label class="f">${t("Nombre comercial","Brand name")}<input class="inp" value="${BRAND}"></label><label class="f">${t("Web","Website")}<input class="inp" value="${WEB}"></label><label class="f">${t("Mercados","Markets")}<input class="inp" value="Madrid, Málaga"></label><label class="f">${t("Idioma de las respuestas","Answer language")}<select class="inp"><option>${t("Español","Spanish")}</option><option>${t("Inglés","English")}</option></select></label></div></section>
+ <section class="c s6"><div class="ch"><div><h2>${t("Paquete de sector","Sector pack")}: ${L(PACK.n)}</h2><p class="sub">${t("Detectado en tu web. Llega montado; puedes cambiar cualquier cosa.","Detected from your website. It arrives set up; you can change anything.")}</p></div></div><table><tbody>${PACK.items.map(([a,b])=>`<tr><td style="width:40%"><b>${L(a)}</b></td><td class="mut">${L(b)}</td></tr>`).join("")}</tbody></table></section></div>`;
+ if(s===1)body=`<section class="c"><h2>${t("Competidores detectados en las respuestas de la IA","Competitors found in AI answers")}</h2><p class="sub mut" style="margin:-6px 0 12px">${t("Los he encontrado en el check. Quita o añade los que quieras.","I found them during the check. Remove or add as you like.")}</p><div class="chips">${S.comps.map(c=>`<span class="chip">${c}${xbtn("rmcomp",c,t("Quitar ","Remove ")+c)}</span>`).join("")}</div><form id="compForm" style="display:flex;gap:8px;margin-top:14px;max-width:30rem"><input class="inp" id="compIn" placeholder="${t("Añadir competidor","Add a competitor")}"><button class="btn sec" type="submit">${t("Añadir","Add")}</button></form></section>`;
+ if(s===2)body=`<section class="c"><h2>${t("180 preguntas generadas para tu sector","180 questions generated for your sector")}</h2><p class="sub mut" style="margin:-6px 0 12px">${t("Unas 60 por fase de compra. Tu plan Esencial mide 120: elijo las 120 con más peso. Ejemplos:","About 60 per buying stage. Your Essential plan measures 120, so I pick the 120 that matter most. Examples:")}</p><div class="grid">${["I","C","D"].map(f=>`<div class="c s4" style="background:var(--deep);border:0"><h3>${L(FASE[f])}</h3><ul class="sm" style="padding-left:18px;margin:8px 0 0">${Q.filter(q=>q[0]===f).slice(0,3).map(q=>`<li>${L(q[3])}</li>`).join("")}</ul></div>`).join("")}</div><p class="sm mut" style="margin-top:12px">${t("Neutras: no nombran a ninguna marca y miden si la IA te descubre sola. Con marca: miden qué dice de ti.","Neutral: they name no brand and show whether the AI finds you on its own. Branded: they show what it says about you.")}</p></section>`;
+ if(s===3)body=`<section class="c"><h2>${t("Elige plan","Choose a plan")}</h2>${plansHtml()}<p class="sm mut" style="margin-top:12px">${t("Precios de ejemplo. 14 días de prueba con tarjeta; no se cobra si cancelas antes.","Sample prices. 14-day trial with card; you're not charged if you cancel before.")}</p></section>`;
+ const nav2=`<div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">${s>0?`<button class="btn ghost" data-act="altaprev">${t("Atrás","Back")}</button>`:""}${s<3?`<button class="btn pri" data-act="altanext">${t("Siguiente","Next")}</button>`:`<button class="btn pri" data-act="altadone">${t("Crear mi panel","Create my dashboard")}</button>`}</div>`;
+ return vh(t("Empieza tu prueba de 14 días","Start your 14-day trial"),t("Con tu web y tu sector preparo competidores, preguntas, fuentes y reglas. Lo revisas y listo.","From your website and sector I set up competitors, questions, sources and rules. You review it and you're done."))+stp+body+nav2;}
+const plansHtml=()=>`<div class="plans" style="margin-top:10px">${PLANS.map(x=>`<button class="plan" data-act="pickplan" data-id="${x.id}" aria-pressed="${S.plan===x.id}"><span class="lab">${L(x.n)}${S.plan===x.id&&S.view==="plan"?t(" · el tuyo"," · yours"):""}</span><span class="pr tab">${eur(x.p)}<small class="mut" style="font-size:13px">${t("/mes","/month")}</small></span><ul>${L(x.pts).map(y=>`<li>${y}</li>`).join("")}</ul></button>`).join("")}</div>`;
+/* ======== INICIO ======== */
+function aviso(){const i=S.mi;if(i<1)return "";const ra=rankIn(i-1,BRAND),rb=rankIn(i,BRAND);
+ const names=Object.keys(SOV).filter(n=>n!==BRAND);const over=names.filter(n=>rankIn(i,n)<rb&&rankIn(i-1,n)>ra),passed=names.filter(n=>rankIn(i,n)>rb&&rankIn(i-1,n)<ra);
+ const ch=ENG.map(e=>[e,ENGV[e][i]-ENGV[e][i-1]]).sort((a,b)=>Math.abs(b[1])-Math.abs(a[1]))[0];const and=t(" y "," and ");
+ const head=rb<ra?t(`${BRAND} sube del ${ord(ra)} al ${ord(rb)} puesto en cuota de voz`,`${BRAND} climbs from ${ord(ra)} to ${ord(rb)} in share of voice`):rb>ra?t(`${BRAND} baja del ${ord(ra)} al ${ord(rb)} puesto en cuota de voz`,`${BRAND} drops from ${ord(ra)} to ${ord(rb)} in share of voice`):t(`${BRAND} se mantiene ${ord(rb)} en cuota de voz`,`${BRAND} holds ${ord(rb)} place in share of voice`);
+ const pub=S.acts.filter(a=>a.st==="pub"&&a.pubMonth===i-1);const noise=delta("sov").c==="none";
+ return `<div class="aviso" data-tour="aviso"><span class="ic" aria-hidden="true">${rb<ra?"▲":rb>ra?"▼":"="}</span><div><span class="lab">${t("Qué ha cambiado","What changed")} · ${MES(MONTHS[i-1])} ${t("a","to")} ${MES(MONTHS[i])}</span><h2>${head}</h2><ul>${passed.length?`<li><b>${t("A quién supera:","Who it overtakes:")}</b> ${passed.join(and)}.</li>`:""}${over.length?`<li><b>${t("Quién la adelanta:","Who overtakes it:")}</b> ${over.join(and)}.</li>`:""}<li><b>${t("Cuánto:","How much:")}</b> ${t(`del ${fmt(K.sov[i-1])} % al ${fmt(K.sov[i])} % de cuota de voz`,`from ${fmt(K.sov[i-1])}% to ${fmt(K.sov[i])}% share of voice`)}${noise?t(", aún dentro del margen de error: el puesto se confirma si se repite el mes que viene",", still within the margin of error: the position is confirmed if it holds next month"):""}.</li><li><b>${t("Dónde:","Where:")}</b> ${t(`el mayor cambio está en ${ch[0]}, ${ch[1]>0?"+":""}${fmt(ch[1])} puntos de visibilidad`,`the biggest change is in ${ch[0]}, ${ch[1]>0?"+":""}${fmt(ch[1])} visibility points`)}.</li>${pub.length?`<li><b>${t("Qué lo explica:","What explains it:")}</b> ${t(`se publicó «${L(pub[0].t)}» y las citas a ${WEB} pasan del ${fmt(K.cit[i-1])} % al ${fmt(K.cit[i])} %`,`“${L(pub[0].t)}” went live and citations of ${WEB} rose from ${fmt(K.cit[i-1])}% to ${fmt(K.cit[i])}%`)}.</li>`:""}</ul></div><div class="acts"><button class="btn pri" data-go="competencia">${t("Ver competencia","See competitors")}</button><button class="btn sec" data-go="acciones">${t("Qué hacer","What to do")}</button></div></div>`;}
+function vInicio(){const i=S.mi,m=MONTHS[i];
+ const kp=`<div class="kpis" data-tour="kpis">${["vis","sov","cit","acc","sent","pos"].map(k=>{const v=val(k,i),d=delta(k),mm=M[k],mo=mm.p?moe(v,S.eng?N_ENG:N_MONTH):mm.fix;return `<button class="kpi" data-act="metric" data-id="${k}" aria-pressed="${S.metric===k}" title="${L(mm.info)}"><span class="l">${L(mm.n)}${S.eng&&k==="vis"?` · ${S.eng}`:""}</span><span class="v">${fmt(v,mm.d)}<small>${mm.u} ±${fmt(mo,mm.d===0?0:1)}</small></span><span class="d st ${d.c}">${d.t}</span></button>`}).join("")}</div>`;
+ const er=ENG.map(e=>({n:e,v:ENGV[e][i],x:fmt(ENGV[e][i])+" %",own:true,act:"eng",id:e,sel:S.eng===e,dim:S.eng&&S.eng!==e}));
+ const sv=Object.entries(SOV).sort((a,b)=>b[1][i]-a[1][i]);
+ const svr=sv.map(([n,v],k)=>({n:`${k+1}. ${n}`,v:v[i],x:fmt(v[i])+" %",own:n===BRAND,act:n===BRAND?"":"comp",id:n,sel:S.comp===n,dim:S.comp&&S.comp!==n&&n!==BRAND}));
+ const goals=GOALS.map(([k,b,tg])=>{const v=K[k][i],mm=M[k],inv=mm.inv;const pct=inv?Math.min(100,(b-v)/(b-tg)*100):Math.min(100,(v-b)/(tg-b)*100);return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;gap:8px;font-size:14px"><b>${L(mm.n)}</b><span class="tab">${fmt(v,mm.d)}${mm.u} <span class="mut">· ${t("objetivo","target")} ${fmt(tg,mm.d)}</span></span></div><div class="meter" style="margin-top:6px"><i style="width:${Math.max(3,pct)}%"></i></div><span class="sm mut">${t(`${Math.round(Math.max(0,pct))} % del camino desde la base de julio`,`${Math.round(Math.max(0,pct))}% of the way from the July baseline`)}</span></div>`;}).join("");
+ const trf=TRAF.vis,trMax=Math.max(...trf),chip=(lab,act,id,x)=>`<span class="chip" style="background:var(--ink);color:var(--bg)">${lab}${xbtn(act,id,x)}</span>`;
+ return vh(t(`${BRAND} en la IA`,`${BRAND} in AI`),t(`Cómo aparece ${BRAND} cuando alguien pregunta a ChatGPT, Gemini, Perplexity o Google por obra nueva. Datos de ${MESL(m)}.`,`How ${BRAND} shows up when someone asks ChatGPT, Gemini, Perplexity or Google about new builds. Data for ${MESL(m)}.`),`<button class="btn sec" data-act="report">${t("Informe del mes","Monthly report")}</button>`)+
+ `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">${monthPick()}${S.eng?chip(`${t("Motor","Engine")}: ${S.eng}`,"eng",S.eng,t("Quitar filtro","Remove filter")):""}${S.comp?chip(`${t("Comparando","Comparing")}: ${S.comp}`,"comp",S.comp,t("Quitar comparación","Remove comparison")):""}</div>`+
+ aviso()+kp+`<div class="grid">
+ <section class="c s8" data-tour="trend"><div class="ch"><div><h2>${L(M[S.metric].n)}, ${t("mes a mes","month by month")}</h2><p class="sub">${L(M[S.metric].info)}. ${t("La banda es el margen de error: lo que cae dentro es ruido. Pulsa un mes para verlo.","The band is the margin of error: anything inside it is noise. Tap a month to view it.")}</p></div></div><div class="fig" id="figTrend" data-chart="trend"></div><div class="legend"><span><i style="background:var(--sienna)"></i>${BRAND}${S.eng?` ${t("en","in")} ${S.eng}`:""}</span>${S.comp&&S.metric==="sov"?`<span><i style="background:var(--s1)"></i>${S.comp}</span>`:""}<span><i style="background:color-mix(in oklab,var(--sienna) 22%,transparent);height:10px"></i>${t("Margen de error","Margin of error")}</span></div></section>
+ <section class="c s4" data-tour="eng"><div class="ch"><div><h2>${t("Por IA","By AI")}</h2><p class="sub">${t(`Visibilidad en ${MESL(m)} · pulsa para filtrar`,`Visibility in ${MESL(m)} · tap to filter`)}</p></div></div>${bars(er,40)}<button class="btn ghost sm" style="margin-top:10px" data-go="competencia">${t("Comparar IAs","Compare AIs")}</button></section>
+ <section class="c s6"><div class="ch"><div><h2>${t("Ranking de cuota de voz","Share of voice ranking")}</h2><p class="sub">${t("Pulsa una marca para compararla en la gráfica","Tap a brand to compare it on the chart")}</p></div></div>${bars(svr,20)}</section>
+ <section class="c s6"><h2>${t("Objetivos a abril de 2027","Targets for April 2027")}</h2>${goals}</section>
+ <section class="c s6"><div class="ch"><div><h2>${t("Visitas que llegan desde la IA","Visits coming from AI")}</h2><p class="sub">${t("Google Analytics 4 conectado · solicitudes de información en la columna derecha","Google Analytics 4 connected · enquiries in the right-hand column")}</p></div></div>${bars(MONTHS.map((mm,k)=>({n:MES(mm),v:trf[k],x:`${trf[k]} · ${TRAF.lead[k]}`,own:k===i})),trMax*1.1)}</section>
+ <section class="c s6"><h2>${t("De dónde llegan en","Where they come from in")} ${MES(MONTHS[4])}</h2>${bars(TRAF.src.map(([n,v])=>({n,v,x:String(v),own:n==="ChatGPT"})),600)}<p class="sm mut" style="margin-top:10px">${t(`ChatGPT trae el ${Math.round(TRAF.src[0][1]/TRAF.vis[4]*100)} % de las visitas desde IA.`,`ChatGPT brings ${Math.round(TRAF.src[0][1]/TRAF.vis[4]*100)}% of AI visits.`)}</p></section></div>`;}
+/* ======== PREGUNTAS ======== */
+const qStatus=v=>v>=30?["ok",t("Fuerte","Strong")]:v>=15?["warn",t("Media","Medium")]:["bad",t("Débil","Weak")];
+function vPreguntas(){const f=S.qf;let Lq=Q.map((q,i)=>({i,f:q[0],b:q[1],tema:q[2],t:L(q[3]),v:q[4],win:q[5]}));
+ if(f.fase!=="all")Lq=Lq.filter(x=>x.f===f.fase);if(f.tipo!=="all")Lq=Lq.filter(x=>f.tipo==="b"?x.b:!x.b);if(f.tema)Lq=Lq.filter(x=>x.tema===f.tema);if(f.q)Lq=Lq.filter(x=>x.t.toLowerCase().includes(f.q.toLowerCase()));
+ Lq.sort((a,b)=>a.v-b.v);
+ const neu=Q.filter(q=>!q[1]),neuV=neu.reduce((s,q)=>s+q[4],0)/neu.length,br=Q.filter(q=>q[1]),brV=br.reduce((s,q)=>s+q[4],0)/br.length;
+ const ch=(k,v,l)=>`<button class="chip" data-act="qf" data-k="${k}" data-id="${v}" aria-pressed="${f[k]===v}">${l}</button>`;
+ const tot=SRC.reduce((s,x)=>s+x[1],0),own=SRC.find(x=>x[2]==="Propia")[1];
+ const types={};SRC.forEach(x=>types[x[2]]=(types[x[2]]||0)+x[1]);
+ return vh(t("Tus preguntas","Your questions"),t("Las preguntas que hace un comprador a la IA, las mismas para ti y para tu competencia. Primero lo más débil.","The questions buyers ask AI, the same for you and your competitors. Weakest first."))+
+ `<div class="kpis"><div class="kpi"><span class="l">${t("Preguntas medidas","Questions tracked")}</span><span class="v">120</span><span class="sm mut">${t("Muestra de 20 en esta demo","20 shown in this demo")}</span></div><div class="kpi"><span class="l">${t("Neutras: te descubre sola","Neutral: found on its own")}</span><span class="v">${fmt(neuV,0)}<small> %</small></span><span class="sm mut">${t("media de visibilidad","average visibility")}</span></div><div class="kpi"><span class="l">${t("Con marca: habla de ti","Branded: talks about you")}</span><span class="v">${fmt(brV,0)}<small> %</small></span><span class="sm mut">${t("media de visibilidad","average visibility")}</span></div><div class="kpi"><span class="l">${t("Débiles","Weak")}</span><span class="v">${Q.filter(q=>q[4]<15).length}</span><span class="sm mut">${t("por debajo del 15 %","below 15%")}</span></div></div>
+ <div class="grid"><section class="c s8"><div class="chips" style="margin-bottom:10px">${ch("fase","all",t("Todas","All"))}${ch("fase","I",L(FASE.I))}${ch("fase","C",L(FASE.C))}${ch("fase","D",L(FASE.D))}</div><div class="chips" style="margin-bottom:10px">${ch("tipo","all",t("Todas","All"))}${ch("tipo","n",t("Neutras","Neutral"))}${ch("tipo","b",t("Con marca","Branded"))}${f.tema?`<span class="chip" style="background:var(--ink);color:var(--bg)">${t("Tema","Topic")}: ${L(TEMA[f.tema])}${xbtn("qtema","",t("Quitar tema","Remove topic"))}</span>`:""}</div>
+ <input class="inp" id="qSearch" placeholder="${t("Buscar pregunta","Search questions")}" value="${f.q.replace(/"/g,"&quot;")}" aria-label="${t("Buscar pregunta","Search questions")}" style="margin-bottom:6px">
+ <div>${Lq.map(x=>{const s=qStatus(x.v);return `<div class="qrow"><div><button class="qopen" data-act="qopen" data-id="${x.i}">${x.t}</button><div class="chips" style="margin-top:6px"><span class="tag">${L(FASE[x.f])}</span><span class="tag">${L(TEMA[x.tema])}</span><span class="tag ${x.b?"br":""}">${x.b?t("Con marca","Branded"):t("Neutra","Neutral")}</span>${x.win!==BRAND?`<span class="tag">${t("Gana","Won by")} ${x.win}</span>`:""}</div></div><div class="qv"><span class="pct">${x.v} %</span>${st(s[0],s[1])}${s[0]!=="ok"?`<button class="btn ghost sm" data-act="fixq" data-id="${x.i}">${t("Arreglar","Fix")}</button>`:""}</div></div>`}).join("")||`<p class="mut" style="padding:16px 0">${t("No hay preguntas con estos filtros.","No questions match these filters.")}</p>`}</div></section>
+ <section class="c s4"><h2>${t("Por tema","By topic")}</h2><p class="sub mut" style="margin:-6px 0 10px">${t("Visibilidad en nov 2026 · pulsa para filtrar","Visibility in Nov 2026 · tap to filter")}</p>${bars(TEMAS.map(x=>({n:L(TEMA[x[0]]),v:x[1],x:x[1]+" %",own:true,act:"qtema",id:x[0],sel:f.tema===x[0],dim:f.tema&&f.tema!==x[0]})),40)}</section>
+ <section class="c s6"><div class="ch"><div><h2>${t("Fuentes que lee la IA","Sources the AI reads")}</h2><p class="sub">${t(`Solo el ${fmt(own/tot*100)} % de los enlaces citados lleva a ${WEB}`,`Only ${fmt(own/tot*100)}% of cited links point to ${WEB}`)}</p></div></div>${bars(SRC.map(x=>({n:x[0],v:x[1],x:x[1]+t(" citas"," cites"),own:x[2]==="Propia"})),220)}<p class="sm mut" style="margin-top:10px">${Object.entries(types).map(([k,v])=>`${L(STYPE[k])} ${Math.round(v/tot*100)} %`).join(" · ")}</p></section>
+ <section class="c s6"><div class="ch"><div><h2>${t("Qué parte de tu web cita la IA","Which parts of your site the AI cites")}</h2><p class="sub">${t("Trazabilidad hasta el elemento de la página","Traced down to the page element")}</p></div></div><div class="scroll"><table><thead><tr><th>${t("Página","Page")}</th><th>${t("Elemento","Element")}</th><th class="r">${t("Citas","Cites")}</th></tr></thead><tbody>${TRACE.map(r=>`<tr><td>${r[0]}</td><td>${r[3]==="bad"?st("bad",L(r[1])):L(r[1])}</td><td class="r">${r[2]}</td></tr>`).join("")}</tbody></table></div><p class="sm mut" style="margin-top:8px">${t("La ficha de Costa Alba no tiene datos estructurados y la IA no la cita nunca.","The Costa Alba listing has no structured data and the AI never cites it.")}</p></section>
+ <section class="c s7"><div class="ch"><div><h2>${t(`Exactitud: lo que la IA dice mal de ${BRAND}`,`Accuracy: what the AI gets wrong about ${BRAND}`)}</h2><p class="sub">${t("Comparado con la ficha de cada promoción conectada","Checked against each connected development listing")}</p></div></div><div class="scroll"><table><thead><tr><th>${t("Dato","Fact")}</th><th>${t("Dice la IA","AI says")}</th><th>${t("Dato real","Real value")}</th><th>${t("Dónde","Where")}</th><th></th></tr></thead><tbody>${ACC.map((a,k)=>`<tr><td><b>${L(a[0])}</b><br>${a[4]==="g"?st("bad",t("Grave","Serious")):st("warn",t("Media","Medium"))}</td><td>${L(a[1])}</td><td>${L(a[2])}</td><td class="sm">${a[3]}</td><td><button class="btn ghost sm" data-act="accfix" data-id="${k}">${t("Crear acción","Create action")}</button></td></tr>`).join("")}</tbody></table></div></section>
+ <section class="c s5"><h2>${t("Preparación técnica","Technical readiness")}</h2><p class="sub mut" style="margin:-6px 0 10px">${t("Si los bots de IA pueden leer y entender tu web","Whether AI crawlers can read and understand your site")}</p>${TECH.map(r=>`<div class="toggle"><div>${st(r[1],L(r[0]))}${r[2]?`<p class="sm mut" style="margin-top:2px">${L(r[2])}</p>`:""}</div>${r[1]!=="ok"?`<button class="btn ghost sm" data-act="techfix">${t("Arreglar","Fix")}</button>`:""}</div>`).join("")}</section></div>`+qDrawer();}
+function qDrawer(){if(S.qopen==null)return "";const q=Q[S.qopen],i=S.qopen;const s=qStatus(q[4]);
+ const per=ENG.map((e,k)=>{const h=(i*7+k*13)%100;const yes=h<q[4]+15;return [e,yes,yes?1+((i+k)%4):null];});
+ const srcs=SRC.filter((_,k)=>(k+i)%3!==0).slice(0,4);
+ return `<div class="back" data-act="qclose"></div><aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="dT" tabindex="-1"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><span class="lab">${L(FASE[q[0]])} · ${L(TEMA[q[2]])}</span><button class="x" data-act="qclose" aria-label="${t("Cerrar","Close")}">×</button></div><h2 id="dT" style="margin:10px 0">${L(q[3])}</h2><div class="chips"><span class="tag ${q[1]?"br":""}">${q[1]?t("Nombra a ","Names ")+BRAND:t("Neutra: mide si la IA te descubre sola","Neutral: shows whether the AI finds you on its own")}</span></div>
+ <section><span class="lab">${t("Cómo le va","How it's doing")}</span><div style="display:flex;align-items:center;gap:12px;margin-top:6px"><span class="big" style="font-size:44px">${q[4]} %</span>${st(s[0],s[1])}</div><p class="sm mut">${t("Gana esta pregunta:","Won by:")} <b>${q[5]}</b>.</p></section>
+ <section><span class="lab">${t("En cada IA","In each AI")}</span><table style="margin-top:6px"><tbody>${per.map(p=>`<tr><td><b>${p[0]}</b></td><td>${p[1]?st("ok",t("Te nombra","Mentions you")):st("none",t("No te nombra","Doesn't mention you"))}</td><td class="r">${p[2]?t(`${ord(p[2])} puesto`,`${ord(p[2])} place`):""}</td></tr>`).join("")}</tbody></table></section>
+ <section><span class="lab">${t("Lo que busca la IA por dentro","What the AI searches for behind the scenes")}</span><p class="sm mut" style="margin:4px 0 8px">${t("Búsquedas que lanza antes de responder (fan-out)","Searches it runs before answering (fan-out)")}</p><ul style="margin:0;padding-left:18px">${L(FANOUT[q[2]]).map(x=>`<li>${x}</li>`).join("")}</ul></section>
+ <section><span class="lab">${t("Fuentes que cita","Sources it cites")}</span>${bars(srcs.map(x=>({n:x[0],v:x[1],x:x[1]+"",own:x[2]==="Propia"})),220)}</section>
+ <div style="display:flex;gap:8px;flex-wrap:wrap">${s[0]!=="ok"?`<button class="btn pri" data-act="fixq" data-id="${i}">${t("Arreglar esta pregunta","Fix this question")}</button>`:""}<button class="btn ghost" data-act="qclose">${t("Cerrar","Close")}</button></div></aside>`;}
+/* ======== COMPETENCIA ======== */
+function vCompet(){const i=S.mi,X=mtx(i),rows=ENG.map((e,k)=>{const all=Object.entries(X).map(([b,v])=>[b,v[k]]).sort((a,b)=>b[1]-a[1]);return {e,me:X[BRAND][k],lead:all[0],rank:all.findIndex(x=>x[0]===BRAND)+1};}).sort((a,b)=>b.me-a.me);
+ const sel=rows.find(r=>r.e===S.selEng)||rows[0];
+ const brands=Object.keys(X).sort((a,b)=>X[b].reduce((s,v)=>s+v,0)-X[a].reduce((s,v)=>s+v,0));const hmx=Math.max(...brands.flatMap(b=>X[b]));
+ const tmx=Math.max(...TOPICS.map(x=>Math.max(x[1],x[2])));const tp=TOPICS[S.topic];
+ return vh(t("Competencia","Competitors"),t(`Contra quién compite ${BRAND} en las respuestas de la IA y en qué terreno gana o pierde.`,`Who ${BRAND} competes with in AI answers, and where it wins or loses.`),monthPick())+`<div class="grid">
+ <section class="c s8"><div class="ch"><div><h2>${t("Carrera por la cuota de voz","Share of voice race")}</h2><p class="sub">${t("Puesto de cada marca mes a mes","Each brand's position month by month")}</p></div></div><div class="fig" id="figBump" data-chart="bump" style="min-height:300px"></div></section>
+ <section class="c s4" style="background:var(--ox);color:#F3E9DF;border-color:var(--ox)"><h2 style="color:#FCFAF6">${t("Lectura rápida","At a glance")}</h2><p style="margin-top:10px;font-size:16px">${t(`${BRAND} es ${ord(rankIn(i,BRAND))} en ${MES(MONTHS[i])}. Morvela Homes lidera con el ${fmt(SOV["Morvela Homes"][i])} %.`,`${BRAND} is ${ord(rankIn(i,BRAND))} in ${MES(MONTHS[i])}. Morvela Homes leads with ${fmt(SOV["Morvela Homes"][i])}%.`)}</p><p style="margin-top:10px;color:#E6DBC8">${t("Gana en calidades y eficiencia. Pierde en garantías y plazos de entrega, justo lo que más preocupa a quien compra sobre plano.","It wins on build quality and efficiency. It loses on guarantees and delivery times, exactly what off-plan buyers worry about most.")}</p></section>
+ <section class="c s7"><div class="ch"><div><h2>${t("Tus IAs, de mejor a peor","Your AIs, best to worst")}</h2><p class="sub">${t(`${BRAND} frente al líder de cada IA · pulsa para ver qué corregir`,`${BRAND} against the leader in each AI · tap to see what to fix`)}</p></div></div><div class="bars">${rows.map(r=>`<button class="bar own ${sel.e===r.e?"sel":""}" data-act="seleng" data-id="${r.e}" aria-pressed="${sel.e===r.e}"><span class="n">${r.e}</span><span class="t"><i style="width:${r.me/35*100}%"></i><b style="left:${r.lead[1]/35*100}%"></b></span><span class="bv">${fmt(r.me)} %</span></button><div class="sm mut" style="padding:0 6px 4px">${r.rank===1?t("Lideras","You lead"):t(`${ord(r.rank)} · lidera ${r.lead[0]} con ${fmt(r.lead[1])} %, a ${fmt(r.lead[1]-r.me)} puntos`,`${ord(r.rank)} · ${r.lead[0]} leads with ${fmt(r.lead[1])}%, ${fmt(r.lead[1]-r.me)} points ahead`)}</div>`).join("")}</div><p class="sm mut" style="margin-top:6px">${t("La raya vertical marca al líder de cada IA.","The vertical line marks the leader in each AI.")}</p></section>
+ <section class="c s5"><span class="lab">${t("Qué corregir en","What to fix in")}</span><h2 style="font-size:26px;margin:4px 0 10px">${sel.e}</h2><p><b>${t("Cómo decide.","How it decides.")}</b> ${L(WHY[sel.e])}</p><ol style="margin:12px 0;padding-left:20px;display:flex;flex-direction:column;gap:6px">${L(FIX[sel.e]).map(x=>`<li>${x}</li>`).join("")}</ol><button class="btn pri" data-act="engfix" data-id="${sel.e}">${t("Crear acciones para","Create actions for")} ${sel.e}</button></section>
+ <section class="c"><div class="ch"><div><h2>${t("Tú frente a tu competencia, IA por IA","You vs your competitors, AI by AI")}</h2><p class="sub">${t(`% de respuestas de cada IA que nombran a cada marca · ${MESL(MONTHS[i])}`,`% of each AI's answers that mention each brand · ${MESL(MONTHS[i])}`)}</p></div></div><div class="scroll"><div class="heat" style="grid-template-columns:minmax(9rem,1.4fr) repeat(${ENG.length},minmax(3.6rem,1fr));min-width:520px"><span></span>${ENG.map(e=>`<span class="h">${e}</span>`).join("")}${brands.map(b=>`<span class="a" style="${b===BRAND?"color:var(--sd)":""}">${b}</span>${X[b].map(v=>{const k=v/hmx;return `<span class="cell" style="background:${b===BRAND?`color-mix(in oklab,var(--sienna) ${18+k*70}%,var(--card))`:`color-mix(in oklab,var(--s2) ${6+k*60}%,var(--card))`};color:${k>.55?"#FCFAF6":"inherit"}">${fmt(v,0)}</span>`}).join("")}`).join("")}</div></div></section>
+ <section class="c s7"><div class="ch"><div><h2>${t(`Qué dice la IA de ${BRAND}`,`What the AI says about ${BRAND}`)}</h2><p class="sub">${t("Menciones negativas y positivas por tema · pulsa para leer frases","Negative and positive mentions by topic · tap to read phrases")}</p></div></div><div class="bars">${TOPICS.map((x,k)=>`<button class="bar ${S.topic===k?"sel":""}" style="grid-template-columns:minmax(7rem,11rem) minmax(0,1fr) minmax(0,1fr)" data-act="topic" data-id="${k}" aria-pressed="${S.topic===k}"><span class="n">${L(TEMA[x[0]])}</span><span class="t" style="background:none"><i style="left:auto;right:0;width:${x[2]/tmx*100}%;background:var(--s2)"></i></span><span class="t" style="background:none"><i style="width:${x[1]/tmx*100}%;background:var(--sienna)"></i></span></button>`).join("")}</div><div class="legend"><span><i style="background:var(--s2)"></i>${t("Negativas","Negative")}</span><span><i style="background:var(--sienna)"></i>${t("Positivas","Positive")}</span></div></section>
+ <section class="c s5"><span class="lab">${L(TEMA[tp[0]])} · ${tp[1]} ${t("positivas","positive")}, ${tp[2]} ${t("negativas","negative")}</span><p style="font:500 18px/1.35 var(--fd);margin:12px 0">${st("ok","")} ${L(tp[3])}</p><p style="font:500 18px/1.35 var(--fd)">${st("bad","")} ${L(tp[4])}</p></section>
+ <section class="c"><h2>${t("Territorios","Territories")}</h2><p class="sub mut" style="margin:-6px 0 10px">${t("Visibilidad por tema y tu puesto entre las 6 marcas","Visibility by topic and your position among the 6 brands")}</p>${bars(TEMAS.map(x=>({n:L(TEMA[x[0]]),v:x[1],x:`${x[1]} % · ${ord(x[2])}`,own:true})),40)}</section></div>`;}
+/* ======== ACCIONES ======== */
+function normBox(a){if(a.norm==="ok")return `<div>${st("ok",t("Normativa: se puede publicar","Compliance: ready to publish"))}</div>`;if(a.norm==="warn")return `<div class="note sm">${st("warn",t("Normativa: corregido automáticamente","Compliance: fixed automatically"))}<p style="margin-top:4px">${L(a.fixnote)}</p></div>`;return `<div class="err sm">${st("bad",t("Normativa: bloqueado","Compliance: blocked"))}<p style="margin-top:4px">${L(a.block)}</p></div>`;}
+function probePanel(a){const qs=a.q.map(k=>Q[k]);const before=qs.reduce((s,q)=>s+q[4],0)/qs.length;const after=Math.min(95,before+(a.norm==="bad"?0:12+a.id.charCodeAt(1)%7));
+ return `<div class="note sm"><b>${t("Prueba antes de publicar","Test before publishing")}</b><p style="margin:4px 0">${t(`Doy este texto como contexto a la IA y le hago ${qs.length} preguntas reales del panel, ${qs.length*3} consultas de tu plan.`,`I give the AI this text as context and ask it ${qs.length} real questions from the dashboard, using ${qs.length*3} queries from your plan.`)}</p><ol style="margin:4px 0;padding-left:18px">${qs.map(q=>`<li>${L(q[3])}</li>`).join("")}</ol><div class="ba" style="margin-top:8px"><div class="p"><span class="lab">${t("Hoy","Today")}</span><b class="tab">${fmt(before,0)} %</b></div><div><span class="lab">${t("Con el cambio","With the change")}</span><b class="tab">${fmt(after,0)} %</b></div></div><p style="margin-top:6px">${t("Orientativo: simula el efecto, no reproduce la respuesta real de cada IA.","Indicative only: it simulates the effect, it doesn't reproduce each AI's real answer.")}</p></div>`;}
+function actCard(a){const pub=a.st==="pub";const mk=M[a.kpi];
+ const ba=pub?(()=>{const pm=a.pubMonth??4;const b=K[a.kpi][pm],af=pm<4?K[a.kpi][pm+1]:null;return `<div class="ba"><div class="p"><span class="lab">${t("Antes","Before")} · ${MES(MONTHS[pm])}</span><b class="tab">${fmt(b,mk.d)}${mk.u}</b></div><div ${af==null?'class="p"':""}><span class="lab">${t("Después","After")}${af!=null?" · "+MES(MONTHS[pm+1]):""}</span><b class="tab">${af!=null?fmt(af,mk.d)+mk.u:t("Pendiente","Pending")}</b><span class="sm">${af!=null?(mk.p&&Math.abs(af-b)>moe(af,N_MONTH)*1.4?t("Fuera del margen de error","Outside the margin of error"):t("Dentro del margen de error","Within the margin of error")):t("Se mide en dic 2026 con las mismas preguntas e IAs","Measured in Dec 2026 with the same questions and AIs")}</span></div></div>`})():"";
+ const stl=pub?st("ok",t("Publicado","Published")):a.st==="rev"?st("warn",t("En revisión","In review")):st("none",t("Por hacer","To do"));
+ return `<article class="act"><div class="row"><span class="tag">${L(a.ch)}</span><span style="flex:1"></span>${stl}</div><h3>${L(a.t)}</h3><p class="sm mut">${L(a.why)}</p><span class="sm">${t("Lo medimos con:","Measured with:")} <b>${L(mk.n)}</b></span>
+ ${a.st!=="todo"?`<div class="draft" style="white-space:pre-line">${L(a.draft)}</div>${pub?"":normBox(a)}`:""}${ba}${S.probe===a.id&&!pub?probePanel(a):""}
+ <div class="row" style="margin-top:auto">${a.st==="todo"?`<button class="btn pri sm" data-act="gen" data-id="${a.id}">${t("Generar borrador","Generate draft")}</button>`:a.st==="rev"?(a.norm==="bad"?`<button class="btn sec sm" data-act="notify">${t("Avisar al responsable","Notify the owner")}</button>`:`<button class="btn pri sm" data-act="approve" data-id="${a.id}">${t("Aprobar y publicar","Approve and publish")}</button>`)+`<button class="btn ghost sm" data-act="probe" data-id="${a.id}" aria-expanded="${S.probe===a.id}">${S.probe===a.id?t("Cerrar prueba","Close test"):t("Probar","Test")}</button>`:""}</div></article>`;}
+const SAMPLE=B("Alvenca presenta la promoción más exclusiva de Madrid: viviendas 100% sostenibles desde 289.000 €, con revalorización garantizada. Escríbenos a laura.gomez@correo.example","Alvenca presents the most exclusive development in Madrid: 100% sustainable homes from €289,000, with guaranteed appreciation. Email laura.gomez@correo.example");
+function checkText(x){const f=[];let out=x;
+ if(/\b(la|el) (\S+ )?(más|mejor)\b|\bthe (most|best)\b|\bn[º°o]\s?1\b|number one|\búnic[oa]\b|\bunique\b|líder|leading/i.test(out)){f.push(["warn",t("Superlativo sin prueba","Unproven superlative"),t("Ley 3/1991, art. 5","Spanish Ley 3/1991, art. 5"),t("Se suaviza el superlativo.","The superlative is toned down.")]);out=out.replace(/\b(la|el) promoción más (\w+)/i,"una promoción $2").replace(/\bthe most (\w+) development/i,"a $1 development").replace(/(la|el) más (\w+)/i,"muy $2");}
+ if(/sostenible|ecol[oó]gic|sustainable|eco-?friendly|\bgreen\b|\beco\b/i.test(out)){f.push(["warn",t("Alegación medioambiental genérica","Generic environmental claim"),t("Directiva (UE) 2024/825","EU Directive 2024/825"),t("Se elimina; usa el dato concreto (calificación energética, % de renovable).","Removed; use the concrete figure instead (energy rating, % renewable).")]);out=out.replace(/\s*(100\s?%\s?)?(sostenibles?|sustainable)|\s*ecol[oó]gic[oa]s?|\s*eco-?friendly/gi,"");}
+ if(/\d[\d.,]*\s?€|€\s?\d/.test(out)&&!/IVA|VAT/i.test(out)){f.push(["warn",t("Precio sin indicar impuestos","Price without tax information"),t("RD 515/1989 y RDL 1/2007, art. 20","Spanish RD 515/1989 and RDL 1/2007, art. 20"),t("Se añade «IVA incluido».","Adds “VAT included”.")]);out=out.replace(/(\d[\d.]*\s?€)/,"$1 (IVA incluido)").replace(/(€\s?\d[\d,]*)/,"$1 (VAT included)");}
+ if(/vivienda|promoci|home|development|flat/i.test(out)&&!/calificaci[oó]n energ|energy rating/i.test(out))f.push(["bad",t("Falta la calificación energética","Energy rating missing"),"RD 390/2021",t("Bloqueado: la publicidad de venta debe incluirla. Conecta la ficha de la promoción.","Blocked: property sale ads must include it. Connect the development listing.")]);
+ if(/revalorizaci[oó]n garantizada|rentabilidad garantizada|garantizamos|guaranteed (appreciation|return)/i.test(out))f.push(["bad",t("Promesa de rentabilidad","Return promise"),t("Ley 3/1991, art. 5","Spanish Ley 3/1991, art. 5"),t("Bloqueado: no se puede garantizar una revalorización.","Blocked: an increase in value can't be guaranteed.")]);
+ if(/[\w.+-]+@[\w-]+\.[\w.]+|\b[6789]\d{2}\s?\d{3}\s?\d{3}\b/.test(out)){f.push(["warn",t("Datos personales en un texto público","Personal data in public text"),t("RGPD, art. 5","GDPR, art. 5"),t("Se eliminan.","Removed.")]);out=out.replace(/[\w.+-]+@[\w-]+\.[\w.]+|\b[6789]\d{2}\s?\d{3}\s?\d{3}\b/g,t("[dato personal eliminado]","[personal data removed]"));}
+ const lvl=f.some(y=>y[0]==="bad")?"bad":f.length?"warn":"ok";return {lvl,f,out:out.replace(/\s{2,}/g," ").replace(/\s+([.,:])/g,"$1")};}
+function vAcciones(){const c=k=>S.acts.filter(a=>a.st===k).length;const items=S.acts.filter(a=>a.st===S.accTab);
+ const AL=[["mail",t("Correo a marketing@alvenca.example","Email to marketing@alvenca.example")],["slack",t("Slack, canal #marketing","Slack, #marketing channel")],["rank",t("Cuando cambie tu puesto en cuota de voz","When your share of voice position changes")],["acc",t("Cuando la IA diga un dato falso de una promoción","When the AI states a wrong fact about a development")],["weekly",t("Resumen semanal los lunes","Weekly summary on Mondays")]];
+ return vh(t("Acciones","Actions"),t(`Todo lo que hay que hacer para que la IA hable mejor de ${BRAND}, en una lista: por hacer, en revisión y publicado. Nada se publica sin tu aprobación.`,`Everything that will make AI talk better about ${BRAND}, in one list: to do, in review and published. Nothing goes live without your approval.`))+
+ `<div class="chips" role="group" aria-label="${t("Estado","Status")}" style="margin-bottom:16px">${[["todo",t("Por hacer","To do")],["rev",t("En revisión","In review")],["pub",t("Publicado","Published")]].map(([k,l])=>`<button class="chip" data-act="acctab" data-id="${k}" aria-pressed="${S.accTab===k}">${l} · ${c(k)}</button>`).join("")}</div>
+ <div class="cards">${items.map(actCard).join("")||`<p class="mut">${t("Nada por aquí.","Nothing here.")}</p>`}</div>
+ <details class="blk" data-blk="norm"><summary>${t("Revisa un texto con las reglas de tu sector","Check a text against your sector's rules")}</summary><div><p class="sm mut" style="margin-bottom:10px">${t("Reglas de promoción inmobiliaria en España y la UE. Orientativas: pendientes de validar por un abogado.","Residential development rules for Spain and the EU. Indicative only, pending legal review.")}</p><textarea class="inp" id="nText" aria-label="${t("Texto a revisar","Text to check")}">${L(SAMPLE)}</textarea><button class="btn pri" data-act="ncheck" style="margin-top:10px">${t("Revisar texto","Check text")}</button><div id="nRes" style="margin-top:12px"></div></div></details>
+ <details class="blk" data-blk="alerts"><summary>${t("Alertas","Alerts")}</summary><div>${AL.map(([k,l])=>`<div class="toggle"><span>${l}</span><button class="sw" role="switch" aria-checked="${S.alerts[k]}" aria-label="${l}" data-act="alert" data-id="${k}"></button></div>`).join("")}</div></details>`;}
+/* ======== MI PLAN ======== */
+function vPlan(){const p=plan(),ias=p.ia+EXTRA.filter(x=>S.addons[x.n]).length,tot=p.q*ias*p.lang*3*p.f,used=Math.round(p.q*5*p.lang*3*p.f*.82),pct=used/tot*100;
+ const price=p.p+EXTRA.filter(x=>S.addons[x.n]).reduce((s,x)=>s+x.p,0);
+ const rows=[[t("Nombre","Name"),BRAND],[t("Web","Website"),WEB],[t("Sector","Sector"),L(PACK.n)],[t("Mercados","Markets"),"Madrid, Málaga"],[t("Competidores","Competitors"),S.comps.join(", ")],[t("Quién aprueba","Approver"),"marketing@alvenca.example"]];
+ return vh(t("Mi plan","My plan"),t(`${L(p.n)} · ${eur(price)}/mes (precio de ejemplo). Lo que tienes, lo que llevas gastado y cómo ampliarlo.`,`${L(p.n)} · ${eur(price)}/month (sample price). What you have, what you've used and how to upgrade.`))+`<div class="grid">
+ <section class="c"><div class="ch"><div><h2>${t("Consumo de noviembre","November usage")}</h2><p class="sub">${t("Se renueva el día 1","Resets on the 1st")}</p></div><span class="chip">${ias} ${t("IAs activas","active AIs")}</span></div><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px"><span class="big" style="font-size:40px">${Math.round(pct)} %</span><span class="tab mut">${t(`${num(used)} de ${num(tot)} consultas`,`${num(used)} of ${num(tot)} queries`)}</span></div><div class="meter"><i style="width:${pct}%"></i><b></b></div>
+ ${pct>=80?`<div class="note sm" style="margin-top:12px">${st("warn",t("Aviso del 80 %","80% warning"))}<p style="margin-top:4px">${t("Al llegar al 100 % pauso las mediciones que no sean imprescindibles y te pregunto. Nunca cobro más sin que lo confirmes.","At 100% I pause non-essential measurements and ask you first. You're never charged more without confirming.")}</p></div>`:""}
+ <p class="formula" style="margin-top:12px">${t(`Consultas al mes = ${p.q} preguntas × ${ias} IAs × ${p.lang} idioma${p.lang>1?"s":""} × 3 repeticiones × ${p.f} mediciones. Cada pregunta se repite 3 veces para poder calcular el margen de error.`,`Queries per month = ${p.q} questions × ${ias} AIs × ${p.lang} language${p.lang>1?"s":""} × 3 repeats × ${p.f} measurements. Each question is repeated 3 times so the margin of error can be calculated.`)}</p></section>
+ <section class="c"><h2>${t("Planes","Plans")}</h2>${plansHtml()}</section>
+ <section class="c s6"><h2>${t("Añade IAs","Add AIs")}</h2><p class="sub mut" style="margin:-6px 0 8px">${t("Cada IA cuesta lo que cuesta consultarla","Each AI is priced by what it costs to query")}</p>${EXTRA.map(x=>`<div class="toggle"><span><b>${x.n}</b> <span class="mut">+${eur(x.p)}${t("/mes","/month")}</span></span><button class="sw" role="switch" aria-checked="${!!S.addons[x.n]}" aria-label="${t("Añadir","Add")} ${x.n}" data-act="addon" data-id="${x.n}"></button></div>`).join("")}<p class="sm mut" style="margin-top:8px">${t("Una IA nueva empieza sin datos: sus cifras aparecen tras la primera medición.","A new AI starts with no data: its figures appear after the first measurement.")}</p></section>
+ <section class="c s6"><h2>${t("Tu paquete de sector","Your sector pack")}</h2><table style="margin-top:6px"><tbody>${PACK.items.map(([a,b])=>`<tr><td><b>${L(a)}</b></td><td class="mut sm">${L(b)}</td></tr>`).join("")}</tbody></table></section>
+ <section class="c s6"><h2>${t("Datos de tu empresa","Company details")}</h2><table style="margin-top:6px"><tbody>${rows.map(([a,b])=>`<tr><td class="mut">${a}</td><td>${b}</td></tr>`).join("")}</tbody></table><button class="btn ghost sm" style="margin-top:10px" data-go="alta">${t("Editar el alta","Edit setup")}</button></section>
+ <section class="c s6"><h2>${t("Exportar","Export")}</h2><p class="sm mut" style="margin:4px 0 12px">${t("Copia los datos del mes en CSV para tu hoja de cálculo.","Copy this month's data as CSV for your spreadsheet.")}</p><button class="btn sec" data-act="csv">${t("Copiar CSV del mes","Copy monthly CSV")}</button><div class="toggle" style="margin-top:12px"><span>${t("API para tus propios informes","API for your own reports")}</span><span class="soon">${S.plan==="avanzado"?t("Incluida","Included"):t("Plan Avanzado","Advanced plan")}</span></div></section></div>`;}
+/* ======== gráficas ======== */
+function drawTrend(el){const W=el.clientWidth,H=el.clientHeight,Lm=W<520?34:46,R=18,T=16,Bm=30;const key=S.metric,mm=M[key];
+ const own=MONTHS.map((_,i)=>val(key,i));const n=S.eng?N_ENG:N_MONTH;const band=own.map(v=>mm.p?moe(v,n):mm.fix);
+ const comp=S.comp&&key==="sov"?SOV[S.comp]:null;const all=[...own.map((v,i)=>v+band[i]),...own.map((v,i)=>v-band[i]),...(comp||[])];
+ let lo=Math.min(...all),hi=Math.max(...all);const pad=(hi-lo)*.15||1;lo=Math.max(0,lo-pad);hi=hi+pad;
+ const X=i=>Lm+i*(W-Lm-R)/(MONTHS.length-1),Y=v=>mm.inv?T+(v-lo)/(hi-lo)*(H-T-Bm):H-Bm-(v-lo)/(hi-lo)*(H-T-Bm);
+ const ticks=[0,1,2,3].map(j=>lo+(hi-lo)*j/3);const line=arr=>arr.map((v,i)=>(i?"L":"M")+X(i).toFixed(1)+" "+Y(v).toFixed(1)).join(" ");
+ const area=own.map((v,i)=>`${i?"L":"M"}${X(i)} ${Y(v+band[i])}`).join(" ")+own.slice().reverse().map((v,j)=>{const i=own.length-1-j;return `L${X(i)} ${Y(v-band[i])}`}).join(" ")+"Z";
+ el.innerHTML=`<svg role="img" aria-label="${L(mm.n)}">${ticks.map(x=>`<line x1="${Lm}" x2="${W-R}" y1="${Y(x)}" y2="${Y(x)}" stroke="var(--line)"/><text x="${Lm-8}" y="${Y(x)+4}" text-anchor="end">${fmt(x,mm.d)}</text>`).join("")}<path d="${area}" fill="var(--sienna)" fill-opacity=".14"/>${comp?`<path d="${line(comp)}" fill="none" stroke="var(--s1)" stroke-width="2" stroke-dasharray="6 5"/>`:""}<path d="${line(own)}" fill="none" stroke="var(--sienna)" stroke-width="3" stroke-linejoin="round"/>${own.map((v,i)=>`<g data-act="month" data-i="${i}" style="cursor:pointer"><rect x="${X(i)-24}" y="${T}" width="48" height="${H-T-Bm}" fill="transparent"/>${i===S.mi?`<line x1="${X(i)}" x2="${X(i)}" y1="${T}" y2="${H-Bm}" stroke="var(--ink)" stroke-dasharray="3 3"/>`:""}<circle cx="${X(i)}" cy="${Y(v)}" r="${i===S.mi?7:5}" fill="${i===S.mi?"var(--sienna)":"var(--card)"}" stroke="var(--sienna)" stroke-width="2"/><text x="${X(i)}" y="${H-8}" text-anchor="middle" style="${i===S.mi?"fill:var(--ink);font-weight:600":""}">${MES(MONTHS[i])}</text></g>`).join("")}<text x="${Math.min(X(S.mi)+10,W-R-60)}" y="${Y(own[S.mi])-12}" style="font:600 18px var(--fd);fill:var(--ink)">${fmt(own[S.mi],mm.d)}${mm.u}</text></svg>`;}
+function drawBump(el){const W=el.clientWidth,H=el.clientHeight,Lm=20,R=W<520?96:150,T=20,Bm=30,nb=Object.keys(SOV).length;
+ const X=i=>Lm+i*(W-Lm-R)/(MONTHS.length-1),Y=r=>T+(r-1)*(H-T-Bm)/(nb-1);
+ const names=Object.keys(SOV).sort((a,b)=>a===BRAND?1:b===BRAND?-1:0);
+ el.innerHTML=`<svg role="img" aria-label="${t("Puesto en cuota de voz por mes","Share of voice position by month")}">${MONTHS.map((m,i)=>`<line x1="${X(i)}" x2="${X(i)}" y1="${T-8}" y2="${H-Bm+6}" stroke="var(--line)"/><text x="${X(i)}" y="${H-8}" text-anchor="middle">${MES(m)}</text>`).join("")}${names.map(b=>{const own=b===BRAND,rk=MONTHS.map((_,i)=>rankIn(i,b));const d=rk.map((r,i)=>(i?"L":"M")+X(i)+" "+Y(r)).join(" ");const last=rk[rk.length-1];
+  return `<g><path d="${d}" fill="none" stroke="${own?"var(--sienna)":"var(--s3)"}" stroke-width="${own?4:2}"/>${rk.map((r,i)=>`<circle cx="${X(i)}" cy="${Y(r)}" r="${own?6:4}" fill="${own?"var(--sienna)":"var(--card)"}" stroke="${own?"var(--sienna)":"var(--s3)"}" stroke-width="2"/>`).join("")}<text x="${X(MONTHS.length-1)+12}" y="${Y(last)+4}" style="font-size:${W<520?11:13}px;font-weight:${own?700:500};fill:${own?"var(--sd)":"var(--mut)"}">${last}. ${W<520?b.split(" ")[0]:b}</text></g>`}).join("")}</svg>`;}
+let RO=null;
+function charts(){if(RO)RO.disconnect();RO=new ResizeObserver(es=>{for(const e of es){const el=e.target;el.dataset.chart==="trend"?drawTrend(el):drawBump(el);}});$$("[data-chart]").forEach(el=>RO.observe(el));}
+/* ======== render ======== */
+const V={check:vCheck,alta:vAlta,inicio:vInicio,preguntas:vPreguntas,competencia:vCompet,acciones:vAcciones,plan:vPlan};
+function render(){nav();$("#app").innerHTML=(V[S.view]||vInicio)()+`<p class="foot">${t(`Demo de Ekko. Todo es ficticio: ${BRAND}, sus promociones, sus competidores, las webs (dominios .example, reservados para ejemplos), las personas y las cifras. ChatGPT, Gemini, Google, Perplexity, Claude y Copilot son marcas de sus propietarios.`,`Ekko demo. Everything is fictional: ${BRAND}, its developments, its competitors, the websites (.example domains, reserved for examples), the people and the figures. ChatGPT, Gemini, Google, Perplexity, Claude and Copilot are trademarks of their owners.`)}</p>`;charts();
+ const d=$(".drawer");if(d)d.focus();
+ const cf=$("#checkForm");if(cf)cf.addEventListener("submit",e=>{e.preventDefault();runCheck();});
+ const pf=$("#compForm");if(pf)pf.addEventListener("submit",e=>{e.preventDefault();const v=$("#compIn").value.trim();if(v&&!S.comps.includes(v)){S.comps.push(v);render();}});
+ const qs=$("#qSearch");if(qs)qs.addEventListener("input",e=>{S.qf.q=e.target.value;const pos=e.target.selectionStart;render();const n=$("#qSearch");n.focus();n.setSelectionRange(pos,pos);});}
+function modal(html){$("#layer").innerHTML=`<div class="back" data-act="mclose"></div><div class="modal" role="dialog" aria-modal="true" tabindex="-1">${html}</div>`;$(".modal").focus();}
+function report(){const i=S.mi;const tx=t(`Informe de ${MESL(MONTHS[i])} · ${BRAND}\n\nVisibilidad: ${fmt(K.vis[i])} % (±${fmt(moe(K.vis[i],N_MONTH))})\nCuota de voz: ${fmt(K.sov[i])} %, puesto ${rankIn(i,BRAND)}\nCuota de citas a ${WEB}: ${fmt(K.cit[i])} %\nExactitud: ${K.acc[i]} %\nSentimiento: ${K.sent[i]}/100\n\nPrioridades: página de garantías, desbloquear PerplexityBot y corregir el precio de Prado Alto.`,`${MESL(MONTHS[i])} report · ${BRAND}\n\nVisibility: ${fmt(K.vis[i])}% (±${fmt(moe(K.vis[i],N_MONTH))})\nShare of voice: ${fmt(K.sov[i])}%, ${ord(rankIn(i,BRAND))} place\nCitation share for ${WEB}: ${fmt(K.cit[i])}%\nAccuracy: ${K.acc[i]}%\nSentiment: ${K.sent[i]}/100\n\nPriorities: guarantees page, unblock PerplexityBot and fix the Prado Alto price.`);
+ modal(`<div style="display:flex;justify-content:space-between;gap:12px"><h2>${t("Informe del mes","Monthly report")}</h2><button class="x" data-act="mclose" aria-label="${t("Cerrar","Close")}">×</button></div><pre class="draft" style="white-space:pre-wrap;font-family:var(--fb);margin:14px 0" id="repTxt">${tx}</pre><button class="btn pri" data-act="copyrep">${t("Copiar resumen","Copy summary")}</button>`);}
+async function copy(x,msg){try{await navigator.clipboard.writeText(x);toast(msg);}catch(e){toast(t("No se pudo copiar en este visor","Couldn't copy in this viewer"));}}
+const TOUR=()=>[["aviso",t("Qué ha cambiado","What changed"),t("El cambio más importante del mes y su causa: quién te adelanta, cuánto y en qué IA.","The month's most important change and its cause: who overtook you, by how much and in which AI.")],["kpis",t("Las cifras del mes","The month's figures"),t("Cada cifra lleva su margen de error. Si el cambio cae dentro, es ruido y te lo digo.","Every figure carries its margin of error. If a change falls inside it, it's noise and I tell you.")],["trend",t("Evolución","Trend"),t("La banda es el margen de error. Pulsa una cifra de arriba para cambiar de métrica.","The band is the margin of error. Tap a figure above to switch metric.")],["eng",t("Por IA","By AI"),t("Cada IA lee fuentes distintas. Pulsa una para ver todo el panel solo con ella.","Each AI reads different sources. Tap one to filter the whole dashboard to it.")]];
+let tourI=-1;
+function tour(i){tourI=i;const l=$("#layer"),T=TOUR();if(i<0||i>=T.length){l.innerHTML="";tourI=-1;return;}const [k,ti,p]=T[i],el=$(`[data-tour="${k}"]`);if(!el){tour(-1);return;}el.scrollIntoView({block:"center"});
+ setTimeout(()=>{const r=el.getBoundingClientRect();const below=r.bottom+200<innerHeight;l.innerHTML=`<div class="tour-hole" style="left:${r.left-6}px;top:${r.top-6}px;width:${r.width+12}px;height:${r.height+12}px"></div><div class="tour-tip" role="dialog" aria-label="${t("Guía","Guide")}" style="left:${Math.max(16,Math.min(r.left,innerWidth-370))}px;top:${below?r.bottom+14:Math.max(16,r.top-190)}px"><span class="lab" style="color:#E6DBC8">${t("Guía","Guide")} · ${i+1} ${t("de","of")} ${T.length}</span><h3>${ti}</h3><p class="sm">${p}</p><div class="row"><button class="btn sec sm" data-act="tourend">${t("Saltar","Skip")}</button><button class="btn pri sm" data-act="tournext">${i===T.length-1?t("Terminar","Finish"):t("Siguiente","Next")}</button></div></div>`;},250);}
+const E=(x,l)=>x&&typeof x==="object"?x[l]:x;
+const newAct=o=>{S.acts.unshift({id:"n"+Date.now(),st:"todo",norm:"ok",...o});S.accTab="todo";go("acciones");toast(t("Acción creada en Por hacer","Action added to To do"));};
+document.addEventListener("click",e=>{
+ if(S.langOpen&&!e.target.closest(".lang")){S.langOpen=false;$("#langSlot").innerHTML=langBox();}
+ const g=e.target.closest("[data-go]");if(g){e.preventDefault();$("#layer").innerHTML="";go(g.dataset.go);return;}
+ const a=e.target.closest("[data-act]");if(!a)return;const act=a.dataset.act,id=a.dataset.id;
+ const A={langtoggle:()=>{S.langOpen=!S.langOpen;$("#langSlot").innerHTML=langBox();if(S.langOpen)$(".lang-m button[aria-checked=true]")?.focus();},setlang:()=>setLang(id),
+ month:()=>{S.mi=+a.dataset.i;render();},metric:()=>{S.metric=id;render();},eng:()=>{S.eng=S.eng===id?null:id;if(S.eng)S.metric="vis";render();},comp:()=>{S.comp=S.comp===id?null:id;if(S.comp)S.metric="sov";render();},
+ qf:()=>{S.qf[a.dataset.k]=id;render();},qtema:()=>{S.qf.tema=!id||S.qf.tema===id?"":id;render();},qopen:()=>{S.qopen=+id;render();},qclose:()=>{S.qopen=null;render();},
+ fixq:()=>{const q=Q[+id];newAct({t:B(`Mejorar «${TEMA[q[2]].es.toLowerCase()}»`,`Improve “${TEMA[q[2]].en.toLowerCase()}”`),ch:B("Web · contenido","Web · content"),why:B(`Visibilidad del ${q[4]} % en «${q[3].es}». La gana ${q[5]}.`,`${q[4]}% visibility on “${q[3].en}”. Won by ${q[5]}.`),kpi:"vis",draft:B(`Respuesta directa de 40 a 60 palabras a «${q[3].es}», con datos de ${BRAND}.`,`A direct 40 to 60 word answer to “${q[3].en}”, with ${BRAND} facts.`),q:[+id]});},
+ accfix:()=>{const r=ACC[+id];newAct({t:B(`Corregir: ${r[0].es.toLowerCase()}`,`Fix: ${r[0].en.toLowerCase()}`),ch:B("Web · ficha y datos estructurados","Web · listing and structured data"),why:B(`La IA dice «${E(r[1],"es")}» y el dato real es «${E(r[2],"es")}».`,`The AI says “${E(r[1],"en")}”; the real value is “${E(r[2],"en")}”.`),kpi:"acc",draft:B(`Dato «${E(r[2],"es")}» en texto claro al principio de la ficha y en sus datos estructurados.`,`“${E(r[2],"en")}” in plain text at the top of the listing and in its structured data.`),q:[15]});},
+ techfix:()=>{S.accTab="todo";go("acciones");toast(t("Ya está en Acciones, en Por hacer","It's already in Actions, under To do"));},
+ engfix:()=>{S.accTab="todo";go("acciones");toast(t(`Acciones para ${id} en Por hacer`,`Actions for ${id} added to To do`));},seleng:()=>{S.selEng=id;render();},topic:()=>{S.topic=+id;render();},
+ acctab:()=>{S.accTab=id;S.probe=null;render();},gen:()=>{const x=S.acts.find(z=>z.id===id);x.st="rev";S.accTab="rev";render();toast(t("Borrador listo y revisado con las reglas del sector","Draft ready and checked against the sector rules"));},
+ approve:()=>{const x=S.acts.find(z=>z.id===id);x.st="pub";x.pubMonth=4;S.probe=null;render();toast(t("Publicado. Lo mido en el próximo ciclo","Published. I'll measure it in the next cycle"));},notify:()=>toast(t("Aviso enviado al responsable de producto","Product owner notified")),probe:()=>{S.probe=S.probe===id?null:id;render();},
+ ncheck:()=>{const r=checkText($("#nText").value);const box=r.lvl==="bad"?"err":r.lvl==="warn"?"note":"";$("#nRes").innerHTML=`<div class="${box}">${r.lvl==="ok"?st("ok",t("Se puede publicar","Ready to publish")):r.lvl==="warn"?st("warn",t("Corregido automáticamente","Fixed automatically")):st("bad",t("Bloqueado: falta un dato que no puedo inventar","Blocked: a fact is missing that I can't make up"))}</div>${r.lvl!=="bad"&&r.f.length?`<div class="draft" style="margin-top:10px"><b>${t("Texto corregido","Corrected text")}</b><p>${r.out.replace(/</g,"&lt;")}</p></div>`:""}<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">${r.f.map(x=>`<div class="${x[0]==="bad"?"err":"note"} sm">${st(x[0],x[1])}<p class="mut" style="margin-top:2px">${x[2]} · ${x[3]}</p></div>`).join("")}</div>`;},
+ alert:()=>{S.alerts[id]=!S.alerts[id];a.setAttribute("aria-checked",S.alerts[id]);},addon:()=>{S.addons[id]=!S.addons[id];render();},
+ pickplan:()=>{S.plan=id;try{localStorage.setItem("ekko.plan",id);}catch(e){}render();},
+ altanext:()=>{S.altaStep++;render();},altaprev:()=>{S.altaStep--;render();},altadone:()=>{S.altaStep=0;go("inicio");toast(t("Panel creado","Dashboard created"));setTimeout(()=>tour(0),500);},
+ rmcomp:()=>{S.comps=S.comps.filter(c=>c!==id);render();},report:report,mclose:()=>{$("#layer").innerHTML="";},copyrep:()=>copy($("#repTxt").textContent,t("Resumen copiado","Summary copied")),
+ csv:()=>copy("month,visibility,share_of_voice,citation_share,accuracy,sentiment,position\n"+MONTHS.map((m,i)=>[m,K.vis[i],K.sov[i],K.cit[i],K.acc[i],K.sent[i],K.pos[i]].join(",")).join("\n"),t("CSV copiado","CSV copied")),
+ tour:()=>{if(S.view!=="inicio")go("inicio");setTimeout(()=>tour(0),200);},tournext:()=>tour(tourI+1),tourend:()=>tour(-1)};
+ A[act]&&A[act]();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(S.langOpen){S.langOpen=false;$("#langSlot").innerHTML=langBox();$(".lang-b").focus();}else if(tourI>=0)tour(-1);else if($("#layer").innerHTML)$("#layer").innerHTML="";else if(S.qopen!=null){S.qopen=null;render();}}});
+const OK=["check","alta","inicio","preguntas","competencia","acciones","plan"];
+addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(OK.includes(h)&&h!==S.view){S.view=h;render();}});
+{const h=location.hash.slice(1);if(OK.includes(h))S.view=h;}
+document.documentElement.lang=S.lang;
+render();
+}
+
+</script>
+</body>
+</html>
