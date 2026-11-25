@@ -1,78 +1,95 @@
+<p align="right"><b>English</b> · <a href="README.es.md">Español</a></p>
+
 <div align="center">
-<img src="https://github.com/Yael-Parra/GEO-Platform/blob/outils/banner.svg" width="1500"/>
+  <img src="assets/banner-en.svg" alt="Ekko: brand visibility in AI answers" width="100%"/>
 </div>
 
-<h1 align="center">EKKO</h1>
-
 <p align="center">
-  <strong>GEO Visibility Platform &nbsp;·&nbsp; Research Prototype</strong>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Status-Research%20%26%20Prototype-A04A5A?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Stack-React%20%7C%20FastAPI%20%7C%20Supabase-3E1D26?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Stage-Paused-BE5A3C?style=flat-square"/>
+  <a href="https://yael-parra.github.io/GEO-Platform/?lang=en"><b>Try the interactive demo →</b></a>
 </p>
 
 ---
 
-## The shift nobody is tracking
+## The shift
 
-Every day, millions of people skip the search bar entirely. They ask ChatGPT. They ask Gemini. They ask Perplexity. And those systems answer with recommendations, comparisons, and brand names, built from a logic most companies have never audited.
+More and more people skip the search bar and ask ChatGPT, Gemini, Perplexity or Google's AI before they buy. "Which developer is most reliable?", "Which mattress should I get?", "Which family car is best?". The AI answers with names. If yours isn't one of them, for that buyer you don't exist.
 
-Your brand is either in that answer or it isn't. And if you don't know which, you're flying blind in the channel that is quietly absorbing intent from traditional search.
+**Ekko tells a brand whether AI recommends it, explains why, and helps it get recommended**, with every change checked against the rules of its sector and measured afterwards.
 
-That is the problem this platform was built to solve.
+![Ekko home dashboard](assets/demo-home-en.png)
 
----
+> The demo uses a made-up company, Alvenca, a residential developer. Everything in it is fictional: the brand, its competitors, the websites and the figures.
 
-## What Ekko is
+## How it works
 
-A GEO (Generative Engine Optimization) platform that tracks and improves brand visibility inside LLM-generated responses across ChatGPT, Gemini, Claude, and Perplexity.
+![How Ekko works: ask, listen, explain, propose, measure](assets/how-it-works-en.svg)
 
-Not a monitoring dashboard. A full diagnostic and optimization loop.
+1. **Ask.** Ekko asks the AIs the questions real buyers ask, from general ones ("is it safe to buy off-plan?") to the ones that name the brand.
+2. **Listen.** It checks whether the brand is mentioned, in what position, what is said about it and which websites the AI uses as sources.
+3. **Explain.** It shows why: which competitor got ahead, in which AI and which source explains it.
+4. **Propose.** It prepares the changes worth making on the website or in communications, checked against the sector's rules.
+5. **Measure.** It compares before and after with the same questions and the same AIs, to know whether the change worked.
 
-**Track.** Query simulation across models, configurable by sector, competitive set, and intent type. You see exactly where your brand appears and where it doesn't.
+## The thinking behind it
 
-**Trace.** Every mention mapped back to its source: which model, which indexed URL, which HTML element (H1, H2, metadata, structured data) generated the response. The first platform to do this at the element level, not just the page level.
+A few principles shape every screen:
 
-**Act.** Based on the visibility gap between where you are and where you need to be, the platform surfaces concrete content and metadata changes to test. Not generic SEO advice. Specific interventions, specific pages, specific elements.
+- **Treat AI like a poll, not a ranking.** AI doesn't always give the same answer, so Ekko asks each question several times and shows every figure with its margin of error. A rise that falls inside that margin is noise, and Ekko says so instead of celebrating it.
+- **A fair comparison.** The same questions go to the same AIs for the brand and for its competitors.
+- **Two kinds of question.** Neutral questions show whether the AI discovers the brand on its own. Branded questions show what it says once it's named.
+- **Every problem leads to an action, and every action is measured.** Measuring alone is not enough; the value is in closing the loop.
+- **The sector sets the rules.** A developer, a pharmaceutical lab and a cosmetics shop are not measured the same way, and they can't say the same things.
+- **Nothing goes live without human approval.**
 
-**Adapt by sector.** A pharma brand and a beauty retailer don't monitor the same signals or ask the same questions. Ekko autoconfigures the query logic and monitoring layer by industry without manual setup per client.
+## Where the data comes from
 
----
+![Where the data comes from: your questions, the AIs and your dashboard](assets/where-data-comes-from-en.svg)
 
-## What this repo contains
+## When to use it
 
-The code is private. What's here is the research and product work: the thinking behind the decisions, the competitive landscape, and the business case.
+![When to use Ekko: five moments](assets/when-to-use-en.svg)
 
-**Competitive analysis.** Direct comparison against Peec AI, Prominence AI, and Profound: positioning, pricing, feature coverage, and where each falls short.
+| Moment | What Ekko gives you |
+| --- | --- |
+| Before you start | A free check with no sign-up: in two minutes you know whether AI mentions you and what it gets wrong |
+| Every week | What changed and why, on one screen |
+| When something drops | An alert telling you who overtook you, by how much and in which AI |
+| Before publishing | A test of the change and a check against your sector's rules |
+| The month after | The before and after of each change, with its margin of error |
 
-**Unit economics model.** Paid acquisition benchmarks for the martech/SEO category, funnel assumptions across three entry models (freemium, trial without card, trial with card), and full unit economics: CAC, LTV, payback period, LTV/CAC ratio.
+## What's inside
 
-**Investor deck.** Problem framing, solution, differentiation, market sizing anchored to real competitor traction data, go-to-market roadmap, and cost structure targeting 87% gross margin.
+**Home.** The month's figures: how often the brand appears, its share of all brand mentions, how often the AI links to its website, whether the AI gets its facts right and the tone it uses. At the top, the most important change and its cause.
 
-This is what competitive research and product validation look like before a line of production code is written.
+**Questions.** The questions being tracked, weakest first. Open one to see which AI mentions the brand, who wins that question, which sources the AI reads and what it searches for behind the scenes.
 
----
+![Question detail](assets/demo-question-en.png)
 
-## Stack
+**Competitors.** How the brand's position moves against each competitor month by month, which AI it does best and worst in, what to fix in each one, and which topics play for or against it.
 
-![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white)
-![FastAPI](https://img.shields.io/badge/-FastAPI-009688?logo=fastapi&logoColor=white)
-![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
-![Supabase](https://img.shields.io/badge/-Supabase-3ECF8E?logo=supabase&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-336791?logo=postgresql&logoColor=white)
-![Vercel](https://img.shields.io/badge/-Vercel-000000?logo=vercel&logoColor=white)
+**Actions.** Everything worth doing, in one list with three states: to do, in review and published. Before anything goes live, the text is checked against the sector's rules: if it can be fixed, it is fixed; if a fact is missing that can't be made up, it is blocked and the owner is notified.
 
----
+![Actions in review with the compliance check](assets/demo-actions-en.png)
+
+**My plan.** What the plan includes, how much has been used this month and how to upgrade, with a warning at 80% and no extra charge without confirmation.
+
+## Built for each sector
+
+When a brand signs up, Ekko detects its sector and arrives configured with the typical buyer questions for each stage of the purchase, the usual competitors, the reference websites for that sector, the metrics that matter most there, the content rules it has to follow and the actions that tend to work.
+
+## Getting started
+
+![Free check](assets/demo-check-en.png)
+
+1. **Free check.** Enter a website and find out in two minutes whether AI mentions it.
+2. **14-day trial.** Ekko sets up the competitors, questions and rules. You review them.
+3. **Your dashboard.** Every week, what changed and what to do.
+
+![Free check result](assets/demo-check-result-en.png)
 
 ## Status
 
-Research and prototyping phase. The market opportunity is validated. The technical approach is sound. Development is paused while other projects take priority.
-
-The window for first-mover advantage in GEO tooling is narrow. This will not stay a research project indefinitely.
+In active development. The [interactive demo](https://yael-parra.github.io/GEO-Platform/?lang=en) shows the full experience with fictional data; in it, the AI answers, the test before publishing and the compliance check are simulated, and the compliance rules are indicative. The demo is available in English and Spanish from the language menu in the top right corner.
 
 ---
 
@@ -80,18 +97,16 @@ The window for first-mover advantage in GEO tooling is narrow. This will not sta
 
 <p align="center">
   <a href="https://www.linkedin.com/in/yael-parra/">
-    <img src="https://img.shields.io/badge/Yael%20Parra-F7F2EC?style=for-the-badge&labelColor=F7F2EC&color=F7F2EC&logoColor=391F27"/>
+    <img src="https://img.shields.io/badge/Yael%20Parra-3E1D26?style=for-the-badge"/>
     &nbsp;
     <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/>
   </a>
 </p>
 
-I'm an AI Consultant and product builder. I work on both sides: advising companies on AI adoption and building the tools myself, from architecture to production deploy.
+I'm an AI consultant and product builder. I work on both sides: helping companies adopt AI and building the tools myself.
 
-Ekko is mine. I scoped the market, ran the competitive research, built the unit economics model, wrote the investor deck, and prototyped the platform. Strategy and execution in the same person.
+Ekko is my own product. I defined the problem, the sector logic and the experience, and designed this demo end to end.
 
-If you're working on something at the intersection of AI and product and want to talk, I'm at [linkedin.com/in/yael-parra](https://www.linkedin.com/in/yael-parra/).
+If you're working on something at the intersection of AI and product and want to talk, find me at [linkedin.com/in/yael-parra](https://www.linkedin.com/in/yael-parra/).
 
-<p align="center">
-  <a href="https://www.linkedin.com/in/yael-parra/">linkedin.com/in/yael-parra</a>
-</p>
+<sub>ChatGPT, Gemini, Google, Perplexity, Claude and Copilot are trademarks of their respective owners, named only to identify the AIs being measured.</sub>
